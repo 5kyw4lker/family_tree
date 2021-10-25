@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stammbaum</title>
+
+  <meta charset="utf-8" />
+  <meta name="description" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="js.js"></script>
+ <!--  <script src="../assets/js/goSamples.js"></script> -->  <!-- this is only for the GoJS Samples framework -->
+  <script id="code">
+    function init() {
+      if (window.goSamples) goSamples();  // init for these samples -- you don't need to call this
+
+        var $ = go.GraphObject.make;
+        var picMan = "pics/man.png";
+        var picWoman = "pics/woman.jpg";
+        var nameSchrift = "bold 14px sans-serif";
+        var nameBreite = 200;
+        var nameHoehe = 16;
+        var gebTodSchrift = "12px sans-serif";
+        var geTodBreiteLinks = 120;
+        var gebTodBreiteRechts = 80;
+        var ageBreiteLinks = 120;
+        var ageBreiteRechts = 30;
+        var jobBreite = 200;
+        var jobSchrift = "Italic 12px sans-serif";
+        var livBreiteLinks = 120;
+        var livBreiteRechts = 120;
+        var untereDatenHoehe = 12;
+
+      myDiagram =
+        $(go.Diagram, "myDiagramDiv",
+          {
+            initialAutoScale: go.Diagram.Uniform,
+            "undoManager.isEnabled": true,
+            // when a node is selected, draw a big yellow circle behind it
+            // Wenn ein Knoten ausgewählt ist, ziehen Sie einen großen gelben Kreis dahinter
+            nodeSelectionAdornmentTemplate:
+              $(go.Adornment, "Auto",
+                { layerName: "Grid" },  // the predefined layer that is behind everything else // die vordefinierte Schicht, die hinter allem anderen steckt
+                $(go.Shape, "Circle", { fill: "#c1cee3", stroke: null }),
+                $(go.Placeholder, { margin: 2 })
+              ),
+            layout:  // use a custom layout, defined below          
+                                                // Abstand zwischen Eltern und Kindern (layerSpacing: war 50)
+                                                                    // Abstand Horizontal (columnSpacing: war 10) 
+              $(GenogramLayout, { direction: 90, layerSpacing: 550, columnSpacing: 160 }),
+          });
+
+
+//############################################################################################################################################################################
+//######  MÄNNER #############################################################################################################################################################
+//############################################################################################################################################################################
+
+      myDiagram.nodeTemplateMap.add("M",
+      
+        $(go.Node, "Auto", 
+        
+          { locationSpot: go.Spot.Center, locationObjectName: "ICON", selectionObjectName: "ICON", 
+            background: "transparent",
+           },
+
+          $(go.Panel, "Auto",
+              { minSize: new go.Size(NaN, 70), },
+              $(go.Shape, "RoundedRectangle", { fill: "#a7aeeb", stroke: null }),      
+
+            $(go.Panel, "Vertical",
+
+//######  Personen Bild #######################################
+
+              $(go.Picture,
+                // Bildereigenschaften
+                { margin: 10, width: 165, height: 220, background: "lightgrey",  },
+                // Picture.source is data bound to the "source" attribute of the model data
+                new go.Binding("source")
+              ),
+
+//######  Zeichen unter Bild ###################################
+
+              $(go.Panel,
+                { name: "ICON" },
+                $(go.Shape, "Square",
+                  { width: 20, height: 20, strokeWidth: 2, fill: "#a7aeeb", stroke: "white", portId: "" }),
+              ),
+
+//######  Personen Daten #######################################
+
+              $(go.Panel, "Table", 
+                  // margin um Bild herum
+                  { margin: 5 },
+
+                  //name
+                  $(go.RowColumnDefinition, { row: 0, background: "#dddfed" }),
+                  //bornplace + birthday
+                  $(go.RowColumnDefinition, { row: 1, background: "#caceeb" }),
+                  //diedplace + deathDay
+                  $(go.RowColumnDefinition, { row: 2, background: "#bcc1eb" }),
+                  //age
+                  $(go.RowColumnDefinition, { row: 3, background: "#a7aeeb" }),
+                  //job
+                  $(go.RowColumnDefinition, { row: 4, background: "#969feb" }),
+                  //marriagePlace + marriageDay
+                  $(go.RowColumnDefinition, { row: 5, background: "#8c96ed" }),
+                  //livingplace
+                  $(go.RowColumnDefinition, { row: 6, background: "#7c88eb" }),
+
+                  //name
+                  $(go.TextBlock, 
+                    new go.Binding("text", "n"),                  
+                    { row: 0, column: 0, columnSpan: 2, margin: 5, textAlign: "center", stroke: "black", font: nameSchrift, width: nameBreite, height: nameHoehe, wrap: go.TextBlock.None}), 
+                  //bornplace
+                  $(go.TextBlock,  
+                    new go.Binding("text", "bornplace"),
+                    { row: 1, column: 0,  margin: 5, textAlign: "left", stroke: "black", font: gebTodSchrift, width: geTodBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //birthday
+                  $(go.TextBlock,  
+                    new go.Binding("text", "birthday"),
+                    { row: 1, column: 1, textAlign: "center", stroke: "black", font: gebTodSchrift, width: gebTodBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //diedplace
+                  $(go.TextBlock,  
+                    new go.Binding("text", "diedplace"),
+                    { row: 2, column: 0,  margin: 5, textAlign: "left", stroke: "black", font: gebTodSchrift, width: geTodBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //deathDay
+                  $(go.TextBlock,  
+                    new go.Binding("text", "deathDay"),
+                    { row: 2, column: 1, textAlign: "center", stroke: "black", font: gebTodSchrift, width: gebTodBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //age
+                  $(go.TextBlock, "Alter",
+                    { row: 3, column: 0, margin: 5, textAlign: "left", stroke: "black", font: "12px sans-serif", width: ageBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //age
+                  $(go.TextBlock,  
+                    new go.Binding("text", "age"),
+                    { row: 3, column: 1, textAlign: "center", stroke: "black", font: "12px sans-serif", width: ageBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //job
+                  $(go.TextBlock,
+                    new go.Binding("text", "job"),
+                    { row: 4, column: 0, columnSpan: 2, margin: 5, textAlign: "center", stroke: "black", font: jobSchrift, width: jobBreite, height: untereDatenHoehe, wrap: go.TextBlock.None}),
+                  //marriageplace
+                  $(go.TextBlock,  
+                    new go.Binding("text", "marriageplace"),
+                    { row: 5, column: 0,  margin: 5, textAlign: "left", stroke: "black", font: gebTodSchrift, width: geTodBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //marriageDay
+                  $(go.TextBlock,  
+                    new go.Binding("text", "marriageDay"),
+                    { row: 5, column: 1, textAlign: "center", stroke: "black", font: gebTodSchrift, width: gebTodBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //livingplace
+                  $(go.TextBlock, "Wohnort",
+                    { row: 6, column: 0, margin: 5, textAlign: "left", stroke: "black", font: "12px sans-serif", width: livBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                  //livingplace
+                  $(go.TextBlock,  
+                    new go.Binding("text", "livingplace"),
+                    { row: 6, column: 1, textAlign: "center", stroke: "black", font: "12px sans-serif", width: livBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+              )
+            )
+          )
+        )
+      );
+
+//############################################################################################################################################################################
+//######  FRAUEN #############################################################################################################################################################
+//############################################################################################################################################################################
+
+      myDiagram.nodeTemplateMap.add("F",
+      
+        $(go.Node, "Auto", 
+      
+          { locationSpot: go.Spot.Center, locationObjectName: "ICON", selectionObjectName: "ICON", 
+            // Hintergundfarbe Maenner  
+            background: "transparent",
+          },
+
+          $(go.Panel, "Auto",
+            { minSize: new go.Size(NaN, 70), },
+            $(go.Shape, "RoundedRectangle", { fill: "#eb9ddd", stroke: null }),      
+
+            $(go.Panel, "Vertical",
+    
+//######  Personen Bild #######################################
+
+              $(go.Picture,
+              // Bildereigenschaften
+              { margin: 10, width: 165, height: 220, background: "lightgrey" },
+              // Picture.source is data bound to the "source" attribute of the model data
+              new go.Binding("source")),
+
+//######  Zeichen unter Bild ###################################
+
+              $(go.Panel,
+                { name: "ICON" },
+                $(go.Shape, "Circle",
+                  { width: 20, height: 20, strokeWidth: 2, fill: "#eb9ddd", stroke: "white", portId: "" }),
+              ),
+
+//######  Personen Daten #######################################
+
+              $(go.Panel, "Table",
+                { margin: 5 },
+
+                //name
+                $(go.RowColumnDefinition, { row: 0, background: "#edcce8" }),
+                //bornplace + birthday
+                $(go.RowColumnDefinition, { row: 1, background: "#ebbce3" }),
+                //diedplace + deathDay
+                $(go.RowColumnDefinition, { row: 2, background: "#ebaee0" }),
+                //age
+                $(go.RowColumnDefinition, { row: 3, background: "#eb9ddd" }),
+                //job
+                $(go.RowColumnDefinition, { row: 4, background: "#eb8fda" }),
+                //marriagePlace + marriageDay
+                $(go.RowColumnDefinition, { row: 5, background: "#eb7fd7" }),
+                //livingplace
+                $(go.RowColumnDefinition, { row: 6, background: "#eb71d4" }),
+
+                //name
+                $(go.TextBlock,
+                  new go.Binding("text", "n"),
+                  { row: 0, column: 0, columnSpan: 2, margin: 5, textAlign: "center", stroke: "black", font: nameSchrift, width: nameBreite, height: nameHoehe, wrap: go.TextBlock.None}),
+                //bornplace
+                $(go.TextBlock,  
+                  new go.Binding("text", "bornplace"),
+                  { row: 1, column: 0,  margin: 5, textAlign: "left", stroke: "black", font: gebTodSchrift, width: geTodBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //birthday
+                $(go.TextBlock,  
+                  new go.Binding("text", "birthday"),
+                  { row: 1, column: 1, textAlign: "center", stroke: "black", font: gebTodSchrift, width: gebTodBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //diedplace
+                $(go.TextBlock,  
+                  new go.Binding("text", "diedplace"),
+                  { row: 2, column: 0,  margin: 5, textAlign: "left", stroke: "black", font: gebTodSchrift, width: geTodBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //deathDay
+                $(go.TextBlock,  
+                  new go.Binding("text", "deathDay"),
+                  { row: 2, column: 1, textAlign: "center", stroke: "black", font: gebTodSchrift, width: gebTodBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //age
+                $(go.TextBlock, "Alter",
+                  { row: 3, column: 0, margin: 5, textAlign: "left", stroke: "black", font: "12px sans-serif", width: ageBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //age
+                $(go.TextBlock,  
+                  new go.Binding("text", "age"),
+                  { row: 3, column: 1, textAlign: "center", stroke: "black", font: "12px sans-serif", width: ageBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //job
+                $(go.TextBlock,
+                  new go.Binding("text", "job"),
+                  { row: 4, column: 0, columnSpan: 2, margin: 5, textAlign: "center", stroke: "black", font: jobSchrift, width: jobBreite, height: untereDatenHoehe, wrap: go.TextBlock.None}),
+                //marriageplace
+                $(go.TextBlock,  
+                  new go.Binding("text", "marriageplace"),
+                  { row: 5, column: 0,  margin: 5, textAlign: "left", stroke: "black", font: gebTodSchrift, width: geTodBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //marriageDay
+                $(go.TextBlock,  
+                  new go.Binding("text", "marriageDay"),
+                  { row: 5, column: 1, textAlign: "center", stroke: "black", font: gebTodSchrift, width: gebTodBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //livingplace
+                $(go.TextBlock, "Wohnort",
+                  { row: 6, column: 0, margin: 5, textAlign: "left", stroke: "black", font: "12px sans-serif", width: livBreiteLinks, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+                //livingplace
+                $(go.TextBlock,  
+                  new go.Binding("text", "livingplace"),
+                  { row: 6, column: 1, textAlign: "center", stroke: "black", font: "12px sans-serif", width: livBreiteRechts, height: untereDatenHoehe, wrap: go.TextBlock.None }),
+              )
+            )
+          )
+        )
+      );
+
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+
+
+      // the representation of each label node -- nothing shows on a Marriage Link
+      // die Darstellung jedes Label-Knotens -- nichts wird auf einem Marriage Link angezeigt
+      myDiagram.nodeTemplateMap.add("LinkLabel",
+                                                                //  vertikale LinienLänge (war 20)
+        $(go.Node, { selectable: false, width: 1, height: 1, fromEndSegmentLength: 20 }));
+
+
+      myDiagram.linkTemplate =  // for parent-child relationships / für Eltern-Kind-Beziehungen
+        $(go.Link,
+          {
+            routing: go.Link.Orthogonal, corner: 5,
+            layerName: "Background", selectable: false,
+            fromSpot: go.Spot.Bottom, toSpot: go.Spot.Top
+          },            // Linienformatierung der Eltern-Kind-Beziehung
+          $(go.Shape, { stroke: "#fff", strokeWidth: 8 })
+        );
+
+      myDiagram.linkTemplateMap.add("Marriage",  // for marriage relationships // für Ehebeziehungen
+        $(go.Link,
+          { selectable: false }, // Linienformatierung der verheirateten
+          $(go.Shape, { strokeWidth: 12, stroke: $(go.Brush, "Linear", { 0.0: "#a7aeeb", 0.3: "#fff", 0.7: "#fff", 1.0: "#eb9ddd" })  })
+        ));
+
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+
+      // n: name, s: sex, m: mother, f: father, ux: wife, vir: husband, a: attributes/markers
+      setupDiagram(myDiagram, [
+
+
+//############################################################################################################################################################################    
+      // Ebene 1 (1000)
+//############################################################################################################################################################################
+
+        { key: 1000, n: "Werner Boltersdorf", s: "M", ux: 1001, birthday: "1753", deathDay: "31.03.1813", bornplace: "* Boich", diedplace: "† Boich", age: "59/60", job: "Ackerer", livingplace: "Boich", source: picMan },
+        { key: 1001, n: "Cecilie Müller", s: "F", birthday: "25.08.1753", deathDay: "26.02.1811", bornplace: "* Drove", diedplace: "† Boich", age: "57", job: "Hausfrau", livingplace: "Boich", source: picWoman },
+
+        { key: 1002, n: "Wilhelm Eßer", s: "M", ux: 1003, birthday: "21.05.1775", deathDay: "30.04.1839", bornplace: "* Drove", diedplace: "† Drove", age: "63", job: "Leinweber", livingplace: "Drove", source: picMan },
+        { key: 1003, n: "Magdalena Nolden", s: "F", birthday: "07.09.1773", bornplace: "* Drove", diedplace: "† Boich", livingplace: "Drove", source: picWoman },
+   
+        { key: 1004, n: "Wilhelm Thelen", s: "M", ux: 1005, birthday: "10.10.1749", deathDay: "27.03.1805", bornplace: "* Boich", diedplace: "† Boich", age: "54/55", job: "Bauer", livingplace: "Boich", source: picMan },
+        { key: 1005, n: "Maria Sophia Kemerling", s: "F", birthday: "1750", deathDay: "26.04.1793", bornplace: "* ", diedplace: "† ", age: "43", job: "Hausfrau", livingplace: "Boich", source: picWoman },
+
+        { key: 1006, n: "Andreas Esser", s: "M", ux: 1007, birthday: "1740", deathDay: "19.02.1816", bornplace: "* ", diedplace: "† Boich", age: "67", job: "Schäfer/Ackerer", livingplace: "Boich", source: picMan },
+        { key: 1007, n: "Anna Margaretha Neumann", s: "F", birthday: "25.08.1746", deathDay: "30.09.1802", bornplace: "* Boich", diedplace: "† Boich", age: "56", job: "Hausfrau", livingplace: "Boich", source: picWoman },
+
+        { key: 1008, n: "Johann Theodor Kremer", s: "M", ux: 1009, bornplace: "* ", diedplace: "† ", job: "Leinweber", livingplace: "Hasenfeld", source: picMan },
+        { key: 1009, n: "Anna Barbara Kriescher", s: "F", bornplace: "* ", diedplace: "† ", livingplace: "Hasenfeld", source: picWoman },
+
+        { key: 1010, n: "Michael Breuer", s: "M", ux: 1011, bornplace: "* ", diedplace: "† ", job: "Leinweber", livingplace: "Hasenfeld", source: picMan },
+        { key: 1011, n: "Elisabeth Lennartz", s: "F", bornplace: "* ", diedplace: "† ", livingplace: "Hasenfeld", source: picWoman },
+
+        { key: 1012, n: "Heinrich Schmitz", s: "M", ux: 1013, bornplace: "* ", diedplace: "† ", livingplace: "Boich", source: picMan },
+        { key: 1013, n: "Gertrud Felser", s: "F", bornplace: "* ", diedplace: "† ", livingplace: "Boich", source: picWoman },
+
+        { key: 1014, n: "Adam Olsen", s: "M", ux: 1015, deathDay: "09.01.1815", bornplace: "* ", diedplace: "† Soller", job: "Tagelöhner", livingplace: "Soller", source: picMan },
+        { key: 1015, n: "Magdalena Becker", s: "F", bornplace: "* ", diedplace: "† ", livingplace: "Soller", source: picWoman },
+
+        { key: 1016, n: "Wilhelm Kreuer", s: "M", bornplace: "* ", diedplace: "† ", ux: 1017, source: picMan },
+        { key: 1017, s: "F", bornplace: "* ", diedplace: "† ", source: picWoman },
+
+        { key: 1018, n: "H. Friedrich Keldenich", s: "M", ux: 1019, birthday: "26.09.1764", bornplace: "* Embken", diedplace: "† ", marriageplace: "Embken", marriageDay: "∞ 04.02.1790", livingplace: "Embken", source: picMan },
+        { key: 1019, n: "Susanne Kieren", s: "F", deathDay: "25.11.1808", bornplace: "* ", deathplace: "* Embken", marriageplace: "Embken", marriageDay: "∞ 04.02.1790", job: "Hausfrau", livingplace: "Hasenfeld", source: picWoman },
+
+        { key: 1020, n: "Peter Vieß", s: "M", ux: 1021, bornplace: "* ", diedplace: "† ", livingplace: "Kreuzau", source: picMan },
+        { key: 1021, n: "Maria Anna Krudwig", s: "F", birthday: "29.04.1742", bornplace: "* Kreuzau", diedplace: "† ", livingplace: "Kreuzau", source: picWoman },
+
+        { key: 1022, n: "Andreas Bierfeld", s: "M", ux: 1023, birthday: "30.08.1757", bornplace: "* Winden", diedplace: "† ", marriageplace: "Kreuzau", marriageDay: "∞ 25.02.1787", livingplace: "Obermaubach", source: picMan },
+        { key: 1023, n: "Agnes Küpper", s: "F", bornplace: "* Obermaubach", diedplace: "† ", marriageplace: "Kreuzau", marriageDay: "∞ 25.02.1787", livingplace: "Obermaubach", source: picWoman },
+
+        { key: 1024, n: "Mathias Pomp", s: "M", ux: 1025, bornplace: "* ", diedplace: "† ", livingplace: "Holzweiler", source: picMan },
+        { key: 1025, n: "Elisabeth Gronenschild", s: "F", bornplace: "* ", diedplace: "† ", livingplace: "Holzweiler", source: picWoman },
+
+        { key: 1026, n: "Christian Johr", s: "M", ux: 1027, bornplace: "* ", diedplace: "† ", livingplace: "Soller", source: picMan },
+        { key: 1027, n: "Anna Catharina Dehlen", s: "F", bornplace: "* ", diedplace: "† ", livingplace: "Soller", source: picWoman },
+
+
+        { key: 1028, n: "Peter Linden", s: "M", ux: 1029, source: picMan },  // Daten von St. Li.
+        { key: 1029, n: "Elisabeth Ludiber", s: "F", source: picWoman },  // Daten von St. Li.
+      
+        { key: 1030, n: "Hermann Rosenstein", s: "M", ux: 1031, source: picMan },  // Daten von St. Li.
+        { key: 1031, n: "Anna Müller", s: "F", source: picWoman },  // Daten von St. Li.
+
+//############################################################################################################################################################################
+      // Ebene 2 (2000)
+//############################################################################################################################################################################
+
+        { key: 2001, n: "Peter Boltersdorf", s: "M", m: 1001, f: 1000, ux: 2002, birthday: "28.08.1798", deathDay: "16.06.1860", bornplace: "* Boich", diedplace: "† Drove", age: "61", job: "Leinweber, Tagelöhner", marriageplace: "Drove", marriageDay: "∞ 12.10.1822", livingplace: "Drove", source: picMan },
+        { key: 2002, n: "Maria Catharina Esser", s: "F", m: 1003, f: 1002, birthday: "1801", deathDay: "18.03.1854", bornplace: "* Drove", diedplace: "† Drove", age: "52/53", job: "Hausfrau", marriageplace: "Drove", marriageDay: "∞ 12.10.1822", livingplace: "Drove", source: picWoman },
+
+        { key: 2003, n: "Heinrich Thelen", s: "M", m: 1005, f: 1004, ux: 2004, birthday: "29.12.1778", deathDay: "28.01.1867", bornplace: "* Lövenich", diedplace: "† Boich", age: "88", job: "Ackerer", marriageplace: "Drove", marriageDay: "∞ 07.06.1805", livingplace: "Boich", source: picMan },
+        { key: 2004, n: "Maria Anna Esser", s: "F", m: 1007, f: 1006, birthday: "29.05.1778", deathDay: "18.06.1826", age: "48", bornplace: "* Boich", diedplace: "† Boich", job: "Hausfrau", marriageplace: "Drove", marriageDay: "∞ 07.06.1805", livingplace: "Boich", source: picWoman },
+
+        { key: 2005, n: "Johann Kremer", s: "M", m: 1009, f: 1008, ux: 2006, birthday: "1777/1781", deathDay: "08.02.1840", bornplace: "* Heimbach", diedplace: "† Hasenfeld", age: "58/63", job: "Bauer", marriageplace: "Heimbach", marriageDay: "∞ 10.05.1809", livingplace: "Hasenfeld", source: picMan },
+        { key: 2006, n: "Anna Maria Breuer", s: "F", m: 1011, f: 1010, birthday: "1784", deathDay: "07.12.1848", age: "63/64", bornplace: "* Heimbach", diedplace: "† Hasenfeld", job: "Hausfrau", marriageplace: "Heimbach", marriageDay: "∞ 10.05.1809", livingplace: "Drove", source: picWoman },
+
+        { key: 2007, n: "Wilhelm Schmitz", s: "M", m: 1013, f: 1012, ux: 2008, bornplace: "* Boich", diedplace: "† ", job: "Tagelöhner", marriageplace: "Drove", marriageDay: "∞ 29.08.1819", livingplace: "Veitzheim/Boich", source: picMan },
+        { key: 2008, n: "Anna Catharina Olsen", s: "F", m: 1015, f: 1014, bornplace: "* Soller", diedplace: "† Boich", job: "Hausfrau", marriageplace: "Drove", marriageDay: "∞ 29.08.1819", livingplace: "Veitzheim/Boich", source: picWoman },
+
+        { key: 2009, n: "Jakob Kreuer", s: "M", m: 1017, f: 1016, ux: 2010, deathDay: "19.09.1862", bornplace: "* ", diedplace: "† Ginnick", job: "Hausierer", livingplace: "Ginnick", source: picMan },
+        { key: 2010, n: "Anna Sophia Keldenich", s: "F", m: 1019, f: 1018, birthday: "30.05.1805", deathDay: "25.04.1840", age: "34", bornplace: "* Embken", diedplace: "† Ginnick", job: "Hausfrau", livingplace: "Ginnick", source: picWoman },
+
+        { key: 2011, n: "Jakob Vieß", s: "M", m: 1021, f:1020, ux: 2012, birthday: "04.07.1777", deathDay: "11.04.1852", age: "74", bornplace: "* Kreuzau", diedplace: "† Winden", job: "Tagelöhner", marriageplace: "Nideggen", marriageDay: "∞ 22.10.1812", livingplace: "Winden", source: picMan },
+        { key: 2012, n: "Cecilie Bierfeld", s: "F", m: 1023, f: 1022, birthday: "23.11.1788", deathDay: "15.11.1857", age: "68", bornplace: "* Obermaubach", diedplace: "† Winden", job: "Hausfrau", marriageplace: "Nideggen", marriageDay: "∞ 22.10.1812", livingplace: "Winden", source: picWoman },
+
+        { key: 2013, n: "Johann Theodor Pomp", s: "M", m: 1025, f:1024, ux: 2014, bornplace: "* Holzweiler", diedplace: "† ", job: "Tagelöhner", marriageplace: "Stockheim", marriageDay: "∞ 25.07.1817", livingplace: "Stockheim", source: picMan },
+        { key: 2014, n: "Elisabeth Johr", s: "F", m: 1027, f: 1026, deathDay: "16.12.1829", bornplace: "* Soller", diedplace: "† Stockheim", job: "Hausfrau", marriageplace: "Stockheim", marriageDay: "∞ 25.07.1817", livingplace: "Stockheim", source: picWoman },
+
+        { key: 2015, n: "Johann Wirtz", s: "M", ux: 2016, source: picMan }, // Daten von St. Li.
+        { key: 2016, n: "Elisabeth Hellenthal", s: "F", source: picWoman }, // Daten von St. Li.
+
+        { key: 2017, n: "Nikolaus Linden", s: "M", m: 1029, f: 1028, ux: 2018, bornplace: "* St. Vith", diedplace: "† ", marriageplace: "Reifferscheid ", marriageDay: "∞ 15.09.1789", source: picMan },  // Daten von St. Li.
+        { key: 2018, n: "Anna Rosenstein", s: "F", m: 1031, f: 1030, bornplace: "* Unterpreth", birthday: "24.07.1763", diedplace: "† ", marriageplace: "Reifferscheid ", marriageDay: "∞ 15.09.1789", source: picWoman },  // Daten von St. Li.
+
+        { key: 2019, n: "Thomas Veith", s: "M", ux: 2020, source: picMan },  // Daten von St. Li.
+        { key: 2020, n: "Katharina Scheur", s: "F", source: picWoman },  // Daten von St. Li.
+
+        { key: 2021, n: "Gerhard Weinand", s: "M", ux: 2022, source: picMan }, // Daten von St. Li.
+        { key: 2022, n: "Gertrud", s: "F", source: picWoman }, // Daten von St. Li.
+
+        { key: 2023, n: "Heinrich Zulauf", s: "M", ux: 2024, source: picMan }, // Daten von St. Li.
+        { key: 2024, n: "Barbara Becker", s: "F", source: picWoman }, // Daten von St. Li.
+
+//############################################################################################################################################################################
+      // Ebene 3 (3000)
+//############################################################################################################################################################################
+
+        { key: 3001, n: "Wilhelm Boltersdorf", s: "M", m: 2002, f:2001, ux: 3006, birthday: "25.06.1823", deathDay: "20.03.1906", age: "82", bornplace: "* Drove", diedplace: "† Drove", job: "Leinweber, Tagelöhner", marriageplace: "Drove", marriageDay: "∞ 20.02.1852", livingplace: "Drove", source: picMan },
+        { key: 3002, n: "Jakob Boltersdorf", s: "M", m: 2002, f:2001, birthday: "18.05.1829", bornplace: "* ", diedplace: "† ", source: picMan },
+        { key: 3003, n: "Maria Boltersdorf", s: "F", m: 2002, f:2001, birthday: "27.04.1831", bornplace: "* ", diedplace: "† ", source: picWoman },
+        { key: 3004, n: "Cecilia Boltersdorf", s: "F", m: 2002, f:2001, birthday: "01.01.1834", bornplace: "* ", diedplace: "† ", source: picWoman },
+        { key: 3005, n: "Heinrich Boltersdorf", s: "M", m: 2002, f:2001, ux: 3013, birthday: "07.06.1842", bornplace: "* Drove", diedplace: "† ", marriageplace: "Füssenich", marriageDay: "∞ 28.09.1874", source: picMan },
+
+        { key: 3006, n: "Gertrud Thelen", s: "F", m: 2004, f:2003, birthday: "13.06.1818", deathDay: "28.11.1911", age: "93", bornplace: "* Boich", diedplace: "† Drove", job: "Magd, Hausfrau", marriageplace: "Drove", marriageDay: "∞ 20.02.1852", livingplace: "Drove", source: picWoman },
+/*         { key: 123, n: "Heinrich Thelen", s: "M", m: 31, f:30, ux: 96, birthday: "11.09.1815", deathDay: "03.12.1888", age: "73", bornplace: "* Boich", diedplace: "† Düren", marriageplace: "Civil, Düren", marriageDay: "∞ 27.01.1847", livingplace: "Boich" }, */
+
+        { key: 3007, n: "Johann Mathias Kremer", s: "M", m: 2006, f:2005, ux: 3008, birthday: "31.08.1823", deathDay: "05.01.1886", age: "62", bornplace: "* Heimbach", diedplace: "† Heimbach", job: "Schäfer", livingplace: "Heimbach", source: picMan },
+        { key: 3008, n: "Elisabeth Schaf", s: "F", diedplace: "† Heimbach", livingplace: "Heimbach", source: picWoman },
+
+        { key: 3009, n: "Johann Peter Schmitz", s: "M", m: 2008, f:2007, ux: 3010, birthday: "21.12.1829", deathDay: "09.05.1890", age: "60", bornplace: "* Veitzheim", diedplace: "† Ginnick", job: "Tagelöhner, Ackerer", marriageplace: "Vettweiß", marriageDay: "∞ 13.02.1858", livingplace: "Ginnick", source: picMan },
+        { key: 3010, n: "Elisabeth Kreuer", s: "F", m: 2010, f:2009, birthday: "15.10.1835", bornplace: "* Ginnick", diedplace: "† Ginnick", job: "Hausfrau", marriageplace: "Vettweiß", marriageDay: "∞ 13.02.1858", livingplace: "Ginnick", source: picWoman },
+
+        { key: 3011, n: "Peter Vieß", s: "M", m: 2012, f:2011, ux: 3012, birthday: "22.11.1813", deathDay: "10.10.1869", age: "55", bornplace: "* Winden", diedplace: "† Winden", job: "Fabrikarbeiter", marriageplace: "Stockheim", marriageDay: "∞ 01.02.1842", livingplace: "Winden", source: picMan },
+        { key: 3012, n: "Anna-Catharina Margaretha Pomp", s: "F", m: 2014, f:2013, birthday: "10.09.1819", deathDay: "09.01.1894", age: "74", bornplace: "* Stockheim", diedplace: "† Winden", job: "Hausfrau", marriageplace: "Stockheim", marriageDay: "∞ 01.02.1842", livingplace: "Winden", source: picWoman },
+
+        { key: 3013, n: "Gertrud Wirtz", s: "F", m: 2016, f:2015, bornplace: "* Geich", birthday: "13.10.1844", marriageplace: "Füssenich", marriageDay: "∞ 28.09.1874", source: picWoman }, // Daten von St. Li.
+
+        { key: 3014, n: "Anna Gertrudi Lindens", s: "F", m: 2017, f:2018, birthday: "24.07.1790", source: picWoman }, // Daten von St. Li.
+        { key: 3015, n: "Anna Catharina Lindens", s: "F", m: 2017, f:2018, birthday: "24.07.1791", source: picWoman }, // Daten von St. Li.
+        { key: 3016, n: "Joes. Michael Lindens", s: "M", m: 2017, f:2018, birthday: "24.07.1794", source: picMan }, // Daten von St. Li.
+        { key: 3017, n: "Maria Magdalena Lindens", s: "F", m: 2017, f:2018, birthday: "01.09.1797", source: picWoman }, // Daten von St. Li.
+        { key: 3018, n: "Joseph Lindens", s: "M", m: 2017, f:2018, ux: 3019, birthday: "1801", bornplace: "* Unterpreth", deathDay: "18.03.1866", diedplace: "† Unterpreth", job: "Schreiner", marriageplace: "Dreiborn ", marriageDay: "∞ 13.01.1828", source: picMan }, // Daten von St. Li.
+
+        { key: 3019, n: "Maria Agnes Veith", s: "F", m: 2020, f:2019, birthday: "13.02.1806", bornplace: "* Dieffenbach", diedplace: "† Eupen", marriageplace: "Dreiborn", marriageDay: "∞ 13.01.1828", source: picWoman }, // Daten von St. Li.
+
+        { key: 3020, n: "Joseph Weinand", s: "M", m: 2022, f: 2021, ux: 3021, source: picMan }, // Daten von St. Li.
+        { key: 3021, n: "Helene Zulauf", s: "F", m: 2024, f: 2023, source: picWoman }, // Daten von St. Li.
+
+        { key: 3022, n: "Juraj Jacko", s: "M", ux: 3023, bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 3023, n: " Zuzana Chladoń", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 3024, n: "Michal Krajčí", s: "M", ux: 3025, bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 3025, n: "Zuzana Ivanides", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 3026, n: "Ján Otčenáš Chladoń", s: "M", ux: 3027, bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 3027, n: "Anna Daniel", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 3028, n: "Michal Garaj", s: "M", ux: 3029, bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 3029, n: "Anna Daniel", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 3030, n: "Juraj Petruška", s: "M", ux: 3031, bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 3031, n: "žofia Gavalier", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 3032, n: "Michal Kubis", s: "M", ux: 3033, bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 3033, n: "Frau v. Michal Kubis", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 3034, n: "Ján Bláško", s: "M", ux: 3035, bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 3035, n: "žofia Bobák ", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+//############################################################################################################################################################################
+      // Ebene 4 (4000)
+//############################################################################################################################################################################
+
+        { key: 4001, n: "Peter Boltersdorf", s: "M", m: 3006, f:3001, ux: 4005, birthday: "25.06.1852", deathDay: "19.12.1943", age: "91", bornplace: "* Drove", diedplace: "† Drove", job: "Fabrikarbeiter/Invalide", marriageplace: "Drove", marriageDay: "∞ 25.02.1881", livingplace: "Drove", source: picMan },
+        { key: 4002, n: "Maria Boltersdorf", s: "F", m: 3006, f:3001, birthday: "14.01.1854", bornplace: "* ", diedplace: "† ", source: picWoman },
+        { key: 4003, n: "Cäcilia Boltersdorf", s: "F", m: 3006, f:3001, birthday: "02.02.1858", bornplace: "* ", diedplace: "† ", source: picWoman },
+        { key: 4004, n: "Heinrich Boltersdorf", s: "M", m: 3006, f:3001, birthday: "26.08.1860", bornplace: "* ", diedplace: "† ", source: picMan },
+
+        { key: 4005, n: "Sibilla Kremer", s: "F", m: 3007, f:3008, birthday: "08.12.1853", deathDay: "14.02.1932", age: "78", bornplace: "* Heimbach", diedplace: "† Drove", job: "Dienstmagd/Hausfrau", marriageplace: "Drove", marriageDay: "∞ 25.02.1881", livingplace: "Drove", source: picWoman },
+
+        { key: 4006, n: "Jakob Schmitz", s: "M", m: 3010, f:3009, ux: 4007, birthday: "25.04.1858", bornplace: "* Ginnick", diedplace: "† Winden/Ginnick", job: "Ackerknecht/Fabrikarbeiter", marriageplace: "Kreuzau", marriageDay: "∞ 21.05.1889", livingplace: "Winden/Ginnick", source: picMan },
+        { key: 4007, n: "Maria Anna Vieß", s: "F", m: 3012, f:3011, birthday: "15.01.1862", deathDay: "29.07.1907", bornplace: "* Winden", diedplace: "† Ginnick", age: "45", job: "Fabrikarbeiterin/Hausfrau", marriageplace: "Kreuzau", marriageDay: "∞ 21.05.1889", livingplace: "Winden/Ginnick", source: picWoman },
+
+        { key: 4008, n: "Joseph Linden", s: "M", m: 3019, f:3018, birthday: "22.12.1828", source: picMan }, // Daten von St. Li.
+        { key: 4009, n: "Karl Linden", s: "M", m: 3019, f:3018, ux: 4012, bornplace: "* Schleiden", birthday: "25.04.1831", deathDay: "06.01.1905", diedplace: "† Reifferscheid", marriageplace: "Hillesheim", marriageDay: "∞ 01.09.1858", job: "Schreiner", source: picMan }, // Daten von St. Li.
+        { key: 4010, n: "Katharina Linden", s: "F", m: 3019, f:3018, birthday: "06.03.1834", source: picWoman }, // Daten von St. Li.
+        { key: 4011, n: "Anna Cathrina Linden", s: "F", m: 3019, f:3018, birthday: "14.07.1848", source: picWoman }, // Daten von St. Li.
+
+        { key: 4012, n: "Barbara Weinand", s: "F", m: 3021, f:3020, bornplace: "* Hillesheim", birthday: "05.02.1840", deathDay: "12.05.1924", diedplace: "† Reifferscheid", marriageplace: "Hillesheim", marriageDay: "∞ 01.09.1858", source: picWoman }, // Daten von St. Li.
+
+        { key: 4013, n: "Pavol Jacko", s: "M", m: 3023, f:3022, ux: 4014, bornplace: "* ", birthday: "1850", deathDay: "04.01.1941", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 4014, n: "Zusana Krajč Gavalier", s: "F", m: 3025, f:3024, bornplace: "* ", birthday: "1855", deathDay: "27.06.1944", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 4015, n: "Ján Otčenáš Chladona", s: "M", m: 3027, f:3026, ux: 4016, bornplace: "* ", birthday: "1873", deathDay: "02.08.1945", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 4016, n: "Mária Garaj Garajček", s: "F", m: 3029, f:3028, bornplace: "* ", birthday: "1882", deathDay: "07.05.1940", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 4017, n: "Ján Petruška", s: "M", m: 3031, f:3030, ux: 4018, bornplace: "* ", birthday: "1863", deathDay: "12.07.1935", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 4018, n: "Anna Srebalová", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 4019, n: "Pavol Kubis", s: "M", m: 3033, f:3032, ux: 4020, bornplace: "* ", birthday: "1861", deathDay: "01.04.1941", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 4020, n: "Mária Bláško", s: "F", m: 3035, f:3034, bornplace: "* ", birthday: "1858", deathDay: "20.02.1923", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 4021, n: "Thomas Zsigrai", s: "M", ux: 4022, bornplace: "* ", birthday: "22.12.1850", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 4022, n: "Frau v. Thomas Zsigrai", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+        { key: 4023, n: "Ján Jurčo", s: "M", ux: 4024, bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picMan }, // Daten von St. Li.
+        { key: 4024, n: "Anna Králiková", s: "F", bornplace: "* ", birthday: "", deathDay: "", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman }, // Daten von St. Li.
+
+//############################################################################################################################################################################
+      // Ebene 5 (5000)
+//############################################################################################################################################################################
+
+        { key: 5001, n: "Wilhelm Boltersdorf", s: "M", m: 4005, f:4001, ux: 5006, birthday: "22.11.1881", deathDay: "30.05.1965", age: "83", bornplace: "* Ginnick", diedplace: "† Ginnick", job: "Fabrikarbeiter/Bahnarbeiter", marriageplace: "Vettweiß", marriageDay: "∞ 21.05.1915", livingplace: "Ginnick", source: "pics/Boltersdorf Wilhelm_c.jpg" },
+        { key: 5002, n: "Elisabeth Boltersdorf", s: "F", m: 4005, f:4001, birthday: "13.04.1885", deathDay: "23.04.1967", age: "82", bornplace: "* Drove", diedplace: "† Drove", job: "Fabrikarbeiterin", marriageplace: "Drove", marriageDay: "∞ 27.01.1911", livingplace: "Drove", source: picWoman },
+        { key: 5003, n: "Matthias Adolf Boltersdorf", s: "M", m: 4005, f:4001, ux:5018, birthday: "18.05.1886", deathDay: "07.11.1952", age: "66", bornplace: "* Drove", diedplace: "† Krauthausen", job: "Fabrikarbeiter", marriageplace: "Drove", marriageDay: "∞ 08.07.1919", source: picMan },
+        { key: 5004, n: "Hubert Egidius Boltersdorf", s: "M", m: 4005, f:4001, ux: 5017, birthday: "01.09.1889", deathDay: "08.05.1964", age: "74", bornplace: "* Drove", diedplace: "† Kreuzau", job: "Händler/Arbeiter", marriageplace: "Drove", marriageDay: "∞ 28.01.1916", source: picMan },
+        { key: 5005, n: "Maria Boltersdorf", s: "F", m: 4005, f:4001, birthday: "25.03.1895", deathDay: "20.01.1968", age: "72", bornplace: "* Drove", diedplace: "† Lendersdorf", job: "Schwester Roberta (Augustinerin in Niederau)", source: picWoman },
+
+        { key: 5006, n: "Elisabeth Schmitz", s: "F", m: 4007, f:4006, birthday: "28.04.1890", deathDay: "15.12.1962", age: "72", bornplace: "* Winden", diedplace: "† Ginnick", job: "Hausfrau", marriageplace: "Ginnick", marriageDay: "∞ 21.05.1915", livingplace: "Ginnick", source: "pics/Elisabeth Schmitz_d.jpg" },
+        { key: 5007, n: "Katharina Schmitz", s: "F", m: 4007, f:4006, birthday: "01.12.1898", deathDay: "07.02.1974", age: "75", bornplace: "* ", diedplace: "† ", marriageplace: "Bessenich", marriageDay: "∞ ", livingplace: "Bessenich", source: picWoman },
+        { key: 5008, n: "Johann Schmitz", s: "M", m: 4007, f:4006, ux: 5013, birthday: "06.08.1894", deathDay: "28.08.1966", age: "72", bornplace: "* Winden", diedplace: "† Geich", marriageDay: "∞ ", livingplace: "Geich", source: picMan },
+        { key: 5009, n: "Margarethe Schmitz", s: "F", m: 4007, f:4006, deathDay: "1978", bornplace: "* ", diedplace: "† Nideggen", marriageDay: "∞ ", livingplace: "Düren", source: picWoman },
+
+        { key: 5010, n: "Michael Schmitt", s: "M", ux: 5011, birthday: "20.01.1882", deathDay: "18.10.1965", age: "83", bornplace: "* Rodder", diedplace: "† ", marriageDay: "∞ 16.06.1906", job: "Fabrikarbeiter & Landwirt", source: "pics/Michael_Schmitt.jpg" },
+        { key: 5011, n: "Katharina Distelrath", s: "F", deathDay: "1952", bornplace: "* ", diedplace: "† ", marriageDay: "∞ 16.06.1906", source: picWoman },
+
+        { key: 5012, n: "Josef Düpper", s: "M", ux: 5007, bornplace: "* ", diedplace: "† ", livingplace: "Bessenich", source: picMan },
+
+        { key: 5013, n: "Margarethe Klütsch", s: "F", bornplace: "* ", diedplace: "† Geich", livingplace: "Geich", source: picWoman },
+
+        { key: 5014, n: "Jakob Steven", s: "M", ux: 5009, birthday: "23.08.1900", deathDay: "04.04.1960", bornplace: "* ", diedplace: "† ", age: "59", livingplace: "Düren", source: picMan },
+
+        { key: 5015, n: "Daniel", s: "M", ux: 5016, bornplace: "* ", diedplace: "† ", source: picMan }, //Peru Uropa
+        { key: 5016, n: "Frau von Daniel", s: "F", bornplace: "* ", diedplace: "† ", source: picWoman }, //Peru Uroma       
+
+        { key: 5017, n: "Franziska Wollseifen", s: "F", birthday: "12.02.1890", deathDay: "23.02.1969", age: "79", bornplace: "* Drove", diedplace: "† Kreuzau", job: "Fabrikarbeiterin/Hausfrau", marriageplace: "Drove", marriageDay: "∞ 28.01.1916", source: picWoman },
+
+        { key: 5018, n: "A. Agnes Helbrich", s: "F", birthday: "04.10.1875", deathDay: "29.06.1840", age: "64", bornplace: "* Bickendorf Kr.", diedplace: "† ", job: "Hausfrau", marriageplace: "Drove", marriageDay: "∞ 08.07.1919", livingplace: "Drove", source: picWoman },
+
+        { key: 5019, n: "Johann Becker", s: "M", ux: 5002, birthday: "07.10.1884", deathDay: "10.11.1965", age: "81", bornplace: "* Drove", diedplace: "† Drove", job: "Papierfabrikarbeiter", marriageplace: "Drove", marriageDay: "∞ 27.01.1911", livingplace: "Drove", source: picMan },
+
+        { key: 5020, n: "Sallys Opa", s: "M", ux: 5021, source: picMan },
+        { key: 5021, n: "Sallys Oma", s: "F", source: picWoman },
+
+       { key: 5022, n: "Hermann Josef Linden", s: "M", m: 4012, f:4009, ux: 5023, birthday: "31.08.1874", bornplace: "* Reifferscheid", deathDay: "03.06.1933", diedplace: "† Reifferscheid", job: "Maurer", marriageplace: "", marriageDay: "∞ ", source: picMan },    // Daten von St. Li.
+       { key: 5023, n: "Anna Luise Sauerbier", s: "F", deathDay: "1914", diedplace: "† ", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+
+       { key: 5024, n: "Hermann Josef Linden", s: "M", m: 4012, f:4009, ux: 5025, birthday: "31.08.1874", bornplace: "* Reifferscheid", deathDay: "03.06.1933", diedplace: "† Reifferscheid", job: "Maurer", marriageplace: "Hellenthal", marriageDay: "∞ 28.10.1917", source: picMan },   // Daten von St. Li.
+       { key: 5025, n: "Maria Schmitt", s: "F", birthday: "27.07.1885", bornplace: "* Greimerath, Saarburg", marriageplace: "Hellenthal", marriageDay: "∞ 28.10.1917", source: picWoman },   // Daten von St. Li.
+
+       { key: 5026, n: "Johann Schwingler", s: "M", ux: 5027, source: picMan },   // Daten von St. Li.
+       { key: 5027, n: "Katharina Junker", s: "F", source: picWoman },   // Daten von St. Li.
+
+       { key: 5028, n: "Johann Paul Heinrichs", s: "M", ux: 5029, birthday: "17.01.1875", deathDay: "16.03.1944", marriageplace: "", marriageDay: "∞ 30.08.1900", source: picMan },   // Daten von St. Li.
+       { key: 5029, n: "Gertrud Breinig", s: "F", bornplace: "* Berg", birthday: "31.05.1878", diedplace: "† Berg", deathDay: "08.07.1957", marriageplace: "", marriageDay: "∞ 30.08.1900", source: picWoman },   // Daten von St. Li.
+
+       { key: 5030, n: "Ján Jacko ", s: "M", m: 4014, f:4013, ux: 5031, bornplace: "* Strba", birthday: "05.11.1902", diedplace: "† ", deathDay: "07.12.1986", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+       { key: 5031, n: "Mária Otčenáš Chladoń ", s: "F", m: 4016, f:4015, bornplace: "* ", birthday: "03.12.1904", diedplace: "† ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+
+       { key: 5032, n: "Ján Petruška", s: "M", m: 4018, f:4017, ux: 5033, bornplace: "* ", birthday: "1890", diedplace: "† ", deathDay: "21.09.1999", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+       { key: 5033, n: "Anna Ilavská (Kubis)", s: "F", m: 4020, f:4019, bornplace: "* ", birthday: "06.03.1895", diedplace: "† ", deathDay: "07.12.1963", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+
+       { key: 5034, n: "Josef Zsigrai", s: "M", m: 4022, f:4021, ux: 5035, bornplace: "* Drieńovec (Somody)", birthday: "05.01.1879", diedplace: "† ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+       { key: 5035, n: "Anna Kepeš (Kiapesova)", s: "F", bornplace: "* Bodolov", birthday: "22.02.1888", diedplace: "† ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+
+       { key: 5036, n: "Pavel Ondruško", s: "M", ux: 5037, bornplace: "* ", birthday: "20.01.1908", diedplace: "† ", deathDay: "30.06.1974", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+       { key: 5037, n: "Anna Jurčová", s: "F", m: 4024, f:4023, bornplace: "* ", birthday: "11.11.1909", diedplace: "† ", deathDay: "09.06.1988", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+
+//############################################################################################################################################################################
+      // Ebene 6 (6000)
+//############################################################################################################################################################################
+
+        { key: 6001, n: "Peter Boltersdorf", s: "M", m: 5006, f:5001, birthday: "05.04.1916", deathDay: "08.12.1941", age: "25", bornplace: "* Ginnick", diedplace: "† Russland", job: "Ackerknecht/Soldat", source: "pics/Peter Boltersdorf_b.JPG" },
+        { key: 6002, n: "Johannes Boltersdorf", s: "M", m: 5006, f:5001, ux: 6008, birthday: "09.03.1917", deathDay: "18.06.1988", age: "71", bornplace: "* Ginnick", diedplace: "† Ginnick", job: "Elektriker (RWE)", marriageplace: "Burgbrohl", marriageDay: "∞ 03.06.1944", livingplace: "Ginnick", source: "pics/Johannes Boltersdorf_d.JPG" },
+        { key: 6003, n: "Matthias Adolf Boltersdorf", s: "M", m: 5006, f:5001, birthday: "05.04.1919", deathDay: "16.11.1944", age: "25", bornplace: "* Ginnick", diedplace: "† Düren (Luftangriff)", job: "Ackerknecht/Soldat", source: "pics/Matthias Boltersdorf_b.JPG" },
+        { key: 6004, n: "Elisabeth Boltersdorf", s: "F", m: 5006, f:5001, birthday: "22.11.1920", deathDay: "20.06.1991", age: "70", bornplace: "* Ginnick", diedplace: "† Kh Mönchengladbach-Rheydt", job: "Hausfrau", marriageplace: "Vettweiß", marriageDay: "∞ 10.05.1948", livingplace: "Obermaubach", source: "pics/Elisabeth Boltersdorf_c.JPG" },
+        { key: 6005, n: "Wilhelm Boltersdorf", s: "M", m: 5006, f:5001, birthday: "24.11.1924", deathDay: "16.11.1944", age: "19", bornplace: "* Ginnick", diedplace: "† Düren (Luftangriff)", job: "Schlosser/Soldat", source: "pics/Wilhelm Boltersdorf_c.JPG" },
+        { key: 6006, n: "Josef Boltersdorf", s: "M", m: 5006, f:5001, birthday: "21.07.1929", deathDay: "28.09.1944", age: "15", bornplace: "* Ginnick", diedplace: "† Nörvenich (Krieg)", job: "Schüler/Flakhelfer", source: "pics/Josef Boltersdorf_c.JPG" },
+        { key: 6007, n: "Roberta Boltersdorf", s: "F", m: 5006, f:5001, birthday: "15.03.1931", deathDay: "06.11.2007", age: "76", bornplace: "* Ginnick", diedplace: "† Winden", job: "Friseurin/Hausfrau", marriageplace: "Vettweiß", marriageDay: "∞ 28.04.1952", livingplace: "Winden", source: "pics/Roberta Boltersdorf_c.JPG" },
+
+        { key: 6008, n: "Maria Schmitt", s: "F", m: 5011, f:5010, birthday: "18.11.1923", deathDay: "31.08.2005", age: "81", bornplace: "* Lützingen", diedplace: "† Ginnick", job: "Hausfrau", marriageplace: "Burgbrohl", marriageDay: "∞ 03.06.1944", livingplace: "Ginnick", source: "pics/Maria Schmitt_c.JPG" },
+        { key: 6009, n: "Luise Schmitt", s: "F", m: 5011, f:5010, bornplace: "* ", diedplace: "† ", source: "pics/Luise Schmitt_b.JPG" },
+        { key: 6010, n: "Peter Schmitt", s: "M", m: 5011, f:5010, ux: 601001, bornplace: "* ", diedplace: "† ", job: "Papa's Patenonkel", source: picMan },
+        { key: 6011, n: "Toni Schmitt", s: "M", m: 5011, f:5010, ux: 601101, bornplace: "* ", diedplace: "† ", source: "pics/Toni Schmitt_c.JPG" },
+        { key: 6012, n: "Hans Schmitt", s: "M", m: 5011, f:5010, ux: 601201, bornplace: "* ", diedplace: "† ", source: picMan },
+        { key: 6013, n: "Jakob Schmitt", s: "M", m: 5011, f:5010, ux: 601301, bornplace: "* ", diedplace: "† ", source: picMan },
+        { key: 6014, n: "Martha Schmitt", s: "F", m: 5011, f:5010, bornplace: "* ", diedplace: "† ", source: "pics/Martha_Schmitt.JPG"  },
+
+        { key: 600901, n: "Josef Balk", s: "M", ux: 6009, bornplace: "* ", diedplace: "† ", source: picMan },   // Daten von St. Li.
+        { key: 601001, n: "Maria ?", s: "F", bornplace: "* ", diedplace: "† ", source: picWoman },   // Daten von St. Li.
+        { key: 601101, n: "Käthe ?", s: "F", bornplace: "* ", diedplace: "† ", source: picWoman },   // Daten von St. Li.
+        { key: 601201, n: "Lotte ?", s: "F", bornplace: "* ", diedplace: "† ", source: picWoman },   // Daten von St. Li.
+        { key: 601301, n: "Frau v. Jakob Schmitt", s: "F", bornplace: "* ", diedplace: "† ", source: picWoman },   // Daten von St. Li.
+        { key: 601401, n: "Hans Weber", s: "M", ux: 6014, bornplace: "* ", diedplace: "† ", source: picMan },   // Daten von St. Li.
+
+        { key: 6015, n: "Katharina Düpper", s: "F", m: 5007, f:5012, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", livingplace: "Zülpich", source: picWoman },
+        { key: 6016, n: "Franz Düpper", s: "M", m: 5007, f:5012, bornplace: "* ", diedplace: "† ", source: picMan },
+        { key: 6017, n: "Willi Düpper", s: "M", m: 5007, f:5012, bornplace: "* ", diedplace: "† ", source: picMan },
+        { key: 6018, n: "Johann Düpper", s: "M", m: 5007, f:5012, ux: 6019, birthday: "14.07.1927", deathDay: "02.02.1968", age: "??", bornplace: "* Bessenich", diedplace: "† KH Zülpich", marriageDay: "∞ 04.08.1951", marriageplace: "Großhau", livingplace: "Großhau", source: picMan },
+
+        { key: 601501, n: "Willi Rövenich", s: "M", ux: 6015, bornplace: "* ", diedplace: "† ", source: picMan },
+
+
+        { key: 6019, n: "Margarethe Becker", s: "F", bornplace: "* Großhau", diedplace: "† ", marriageDay: "∞ 04.08.1951", marriageplace: "Großhau", livingplace: "Großhau", source: picWoman },
+
+        { key: 6020, n: "Martha Heinen", s: "F", birthday: "1931", deathDay: "2000", age: "68", bornplace: "* Obermaubach", diedplace: "† ", marriageDay: "∞ ", livingplace: "Düren/Obermaubach", source: picWoman },
+
+        { key: 6021, n: "Wilhelm Steven", s: "M", m: 5009, f:5014, ux: 6020, birthday: "1923", deathDay: "1996", age: "72", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", livingplace: "Düren/Obermaubach", source: picMan },
+        { key: 6022, n: "Martin Steven", s: "M", m: 5009, f:5014, ux: 6024, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: picMan },
+        { key: 6023, n: "Katharina Steven", s: "F", m: 5009, f:5014, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: picMan },
+
+        { key: 6024, n: "Anne Marie Michels", s: "F", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: picWoman },
+
+        { key: 6025, n: "Manuel Torres", s: "M", m: 5016, f:5015, ux: 6026, birthday: "1976", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", livingplace: "Lima", source: picMan },
+        { key: 6026, n: "Mercedes Vives de Torres", s: "F", m: 5016, f:5015, birthday: "24.01.1925", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", livingplace: "Lima", source: "pics/Mercedes Vives Torres.JPG" },
+
+        { key: 6029, n: "Hugo Falter", s: "M", ux: 6004, birthday: "25.04.1916", deathDay: "12.08.1978", age: "62", bornplace: "* Obermaubach", diedplace: "† KH Lendersdorf", job: "Landwirt/Berm./Arbeiter", marriageplace: "Vettweiß", marriageDay: "∞ 10.05.1948", livingplace: "Obermaubach", source: picMan },
+
+        { key: 6030, n: "Paul Sistig", s: "M", ux: 6007, birthday: "10.03.1923", deathDay: "08.05.2013", age: "90", bornplace: "* Winden", diedplace: "† KH Lendersdorf", job: "Landwirt/Papierarbeiter", marriageplace: "Vettweiß", marriageDay: "∞ 28.04.1952", livingplace: "Winden", source: picMan },
+
+        { key: 6031, n: "Johann Peter Becker", s: "M", m: 5002, f:5019, ux:6036, birthday: "21.07.1912", deathDay: "18.01.1973", age: "60", bornplace: "* Drove", diedplace: "† Drove", job: "Ofenarbeiter", marriageplace: "Kreuzau", marriageDay: "∞ 06.03.1941", livingplace: "Drove", source: picMan },
+        { key: 6032, n: "Anna Sibilla Becker", s: "F", m: 5002, f:5019, birthday: "28.01.1915", bornplace: "* Drove", diedplace: "† Drove", job: "Fabrikarbeiterin", marriageplace: "Kreuzau", marriageDay: "∞ 19.04.1938", livingplace: "Kreuzau", source: picWoman },
+        { key: 6033, n: "Gangolf Becker", s: "M", m: 5002, f:5019, birthday: "1923", deathDay: "20.02.1943", bornplace: "* ", diedplace: "† gefallen", age: "19/20", job: "Soldat", source: picMan },
+        { key: 6034, n: "Matthias Adolf Becker", s: "M", m: 5002, f:5019, birthday: "26.02.1925", deathDay: "14.10.1944", bornplace: "* Drove", diedplace: "† verwund. Laz. Bad Ischl", age: "19", job: "Soldat", source: picMan },
+
+        { key: 6035, n: "Johann Nikl. Clemens", s: "M", ux: 6032, birthday: "06.06.1912", deathDay: "13.06.1979", age: "67", bornplace: "* Winden", diedplace: "† Kreuzau", job: "Fabrikarbeiter", marriageplace: "Kreuzau", marriageDay: "∞ 19.04.1938", livingplace: "Kreuzau", source: picMan },
+
+        { key: 6036, n: "Maria Knipprath", s: "F", birthday: "12.10.1911", bornplace: "* Kreuzau", diedplace: "† Drove", job: "Packerin", marriageplace: "Kreuzau", marriageDay: "∞ 06.03.1941", livingplace: "Drove", source: picWoman },
+
+        { key: 6037, n: "Gertraud Boltersdorf", s: "F", m: 5018, f:5003, birthday: "27.12.1920", bornplace: "* Drove", diedplace: "† ", marriageDay: "∞ ", livingplace: "Stockheim", source: picWoman },
+
+        { key: 6038, n: "Paul Harscheid", s: "M", ux: 6037, bornplace: "* Stockheim", diedplace: "† ", marriageDay: "∞ ", livingplace: "Stockheim", source: picMan },
+
+        { key: 6039, n: "Sibilla Boltersdorf", s: "F", m: 5017, f:5004, birthday: "20.12.1917", bornplace: "* Drove", diedplace: "† Kreuzau", job: "Fabrikarbeiterin/Hausfrau", marriageplace: "Kreuzau", marriageDay: "∞ 12.09.1939", livingplace: "Kreuzau", source: picWoman },
+        { key: 6040, n: "Anna Mechtilde Boltersdorf", s: "F", m: 5017, f:5004, birthday: "08.11.1919", deathDay: "08.10.2015", age: "95", bornplace: "* Drove", diedplace: "† Nideggen (Altersheim)", job: "Arbeiterin/Apoth.-H./Schriftst.", marriageplace: "Kreuzau", marriageDay: "∞ 17.09.1948", livingplace: "Nideggen", source: picWoman },
+            //Anni Kroll
+              //Anna-Mechtilde „Anni“ Kroll, geb. Boltersdorf (* 8. November 1919 in Drove; † 8. Oktober 2015 in Nideggen) war eine deutsche Autorin und Heimatdichterin.
+              //Kroll absolvierte eine Lehre als Apothekenhelferin. Nach Eintritt in die Rente im Jahr 1979 machte sie die Dürener Mundart zu ihrem Hobby. Sie verfasste Gedichte und Gedichtbände in ihrer Heimatsprache. Sie stand in einer Reihe mit den Heimatdichtern Josef Schregel und Tillmann Gottschalk. Sie trat 1980 in den „Verein Dürener Platt“ ein.
+              //Am 8. Oktober 2015 starb Anni Kroll einen Monat vor ihrem 96. Geburtstag in einem Altenheim in Nideggen in völliger Blindheit.
+              //Ehrungen
+              //Für ihr Engagement wurde Kroll im Jahre 1999 vom Landschaftsverband Rheinland mit dem Rheinlandtaler ausgezeichnet.
+              //Außerdem wurde sie 2014 Ehrenmitglied des „Vereins Dürener Platt“.
+              //Werke
+              //    Wä schriev, dä bliev - Jedichte on Episödchere en Dürene Platt, 1983
+              //    Jahre der Angst, 1984
+              //    Op Platt jekallt, de Rur erop, de Rur erav, 1987
+              //    Doht ens avschalte, 1991
+              //    Quelle: https://de.wikipedia.org/wiki/Anni_Kroll
+        { key: 6041, n: "Wilhelm Boltersdorf", s: "M", m: 5017, f:5004, ux:6049, birthday: "15.04.1921", deathDay: "05.09.1992", age: "80", bornplace: "* Drove", diedplace: "† KH Düren", job: "Papierarbeiter", marriageplace: "Kreuzau", marriageDay: "∞ 04.12.1950", livingplace: "Thum", source: picMan },
+        { key: 6042, n: "Matthias Boltersdorf", s: "M", m: 5017, f:5004, birthday: "26.07.1923", deathDay: "22.05.1990", age: "66", bornplace: "* Drove", diedplace: "† Düren", job: "Knecht/Arbeiter", source: picMan },
+        { key: 6043, n: "Sof-Josefa Mar. Boltersdorf", s: "F", m: 5017, f:5004, birthday: "22.03.1925", deathDay: "19.09.1995", age: "70", bornplace: "* Drove", diedplace: "† Frankfurt", job: "Hausfrau", marriageplace: "Kreuzau", marriageDay: "∞ 19.10.1946", livingplace: "Frankfurt", source: picWoman },
+        { key: 6044, n: "Frieda Gertrud Boltersdorf", s: "F", m: 5017, f:5004, birthday: "02.03.1931", deathDay: "13.12.1998", age: "67", bornplace: "* Drove", diedplace: "† Kreuzau", job: "Hausfrau", marriageplace: "Kreuzau", marriageDay: "∞ 15.09.1950", livingplace: "Boich/Kreuzau", source: picWoman },
+
+        { key: 6045, n: "H. Hans. W. Fischer", s: "M", ux: 6043, birthday: "07.08.1925", bornplace: "* Frankfurt", diedplace: "† Frankfurt", job: "Mechaniker", marriageplace: "Kreuzau", marriageDay: "∞ 19.10.1946", livingplace: "Frankfurt", source: picMan },
+
+        { key: 6046, n: "Andreas Leisten", s: "M", ux: 6044, birthday: "04.12.1927", deathDay: "30.10.2000", age: "72", bornplace: "* Zülpich-Hoven", diedplace: "† Kreuzau", job: "Sägewerkarbeiter", marriageplace: "Kreuzau", marriageDay: "∞ 15.09.1950", livingplace: "Boich/Kreuzau", source: picMan },
+
+        { key: 6047, n: "Josef Hubert Kempener", s: "M", ux: 6039, birthday: "26.10.1912", deathDay: "08.05.1976", age: "63", bornplace: "* Kreuzau", diedplace: "† Kreuzau", job: "Fabrikarbeiter", marriageplace: "Kreuzau", marriageDay: "∞ 12.09.1939", livingplace: "Kreuzau", source: picMan },
+
+        { key: 6048, n: "Werner E.B. Kroll", s: "F", ux: 6040, birthday: "15.11.1919", deathDay: "12.08.2005", age: "85", bornplace: "* Neudamm-Neumark", diedplace: "† Nideggen", job: "Finanzamt", marriageplace: "Kreuzau", marriageDay: "∞ 17.09.1948", livingplace: "Nideggen", source: picMan },
+
+        { key: 6049, n: "Angela Becker", s: "F", birthday: "18.09.1919", bornplace: "* Thum", diedplace: "† Thum", job: "Hausfrau", marriageplace: "Kreuzau", marriageDay: "∞ 04.12.1950", livingplace: "Thum", source: picWoman },
+
+        { key: 6050, n: "Hans Weber", s: "M", ux: 6014, source: picMan },
+
+        { key: 6051, n: "Sallys Vater", s: "M", ux: 6052, source: picMan },
+        { key: 6052, n: "Sallys Mutter", s: "F", m: 5020, f: 5021, bornplace: "* Kenia", livingplace: "Kenia", source: "pics/Sallys_Mama.JPG" },
+        { key: 6053, n: "Sallys Tante", s: "F", m: 5020, f: 5021, source: "pics/Sallys_Tante.JPG" },
+
+        { key: 6054, n: "Rainers Vater Lubek", s: "M", ux: 6055, source: picMan },
+        { key: 6055, n: "Margarete Lenk", s: "F", source: "pics/Margarete_Lenk.jpg" },
+
+        { key: 6056, n: "Hans Brembeck", s: "M", ux: 6057, source: "pics/Hans_Brembeck.jpg" },
+        { key: 6057, n: "Elly Kenziora", s: "F", source: "pics/Elly_Kenziora.jpg" },
+
+        { key: 6058, n: "Josef Linden", s: "M", m: 5023, f:5022, ux: 6059, birthday: "09.11.1903", deathDay: "07.12.1980", job: "Zimmerer", marriageplace: "Schleiden", marriageDay: "∞ 27.06.1929", source: picMan },   // Daten von St. Li.
+        { key: 6060, n: "Peter Josef Linden", s: "M", m: 5023, f:5022, ux: 6061, bornplace: "* Reifferscheid", birthday: "01.01.1911", bornplace: "* Berg", deathDay: "04.11.1955", job: "Landwirt", marriageplace: "", marriageDay: "∞ ", source: "pics/Peter_Josef_Linden.jpg" },   // Daten von St. Li.
+        { key: 6062, n: "Hermann Linden", s: "M", ux: 606201, m: 5023, f:5022, marriageDay: "1938", source: picMan },   // Daten von St. Li.
+        { key: 6063, n: "Hubert Linden", s: "M", ux: 606301, m: 5023, f:5022, source: picMan },   // Daten von St. Li.
+        { key: 6064, n: "Bernhard Linden", s: "M", m: 5023, f:5022, source: picMan },   // Daten von St. Li.
+        { key: 6065, n: "Johann Linden", s: "M", ux: 606501, m: 5023, f:5022, source: picMan },   // Daten von St. Li.
+        { key: 6066, n: "Anna Linden", s: "F", m: 5023, f:5022, source: picWoman },   // Daten von St. Li.
+        { key: 6067, n: "Barbara Linden", s: "F", m: 5023, f:5022, source: picWoman },   // Daten von St. Li.
+        { key: 6068, n: "Gertrud Linden", s: "F", m: 5023, f:5022, source: picWoman },   // Daten von St. Li.
+
+        { key: 6059, n: "(Anna) Barbara Schwingler", s: "F", m: 5027, f:5026, marriageplace: "Schleiden", marriageDay: "∞ 27.06.1929", source: picMan },   // Daten von St. Li.
+        { key: 606201, n: "Anna Weyers", s: "F", marriageDay: "1938", source: picWoman },   // Daten von St. Li.
+        { key: 606301, n: "Martha Schumacher", s: "F", marriageDay: "1938", source: picWoman },   // Daten von St. Li.
+        { key: 606501, n: "Katharina ?", s: "F", marriageDay: "", source: picWoman },   // Daten von St. Li.
+
+
+        { key: 6061, n: "Anna Heinrichs", s: "F", m: 5029, f:5028, birthday: "26.07.1915", deathDay: "02.03.1989", marriageplace: "", marriageDay: "∞ ", job: "Hausgehilfin", source: "pics/Anna_Heinrichs.jpg" },   // Daten von St. Li.
+        { key: 6069, n: "Karl Heinrichs", s: "M", m: 5029, f:5028, ux: 6078, birthday: "21.09.1919", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+        { key: 6070, n: "(Johann) Josef Heinrichs", s: "M", m: 5029, f:5028, ux:6079, birthday: "22.04.1901", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+        { key: 6080, n: "Heinrich Heinrichs", s: "M", m: 5029, f:5028, birthday: "21.08.1903", deathDay: "1944", source: picMan },   // Daten von St. Li.
+        { key: 6081, n: "Johann Heinrichs", s: "M", m: 5029, f:5028, ux: 6082, birthday: "05.06.1905", source: picMan },   // Daten von St. Li.
+        { key: 6071, n: "Jakob Heinrichs", s: "M", m: 5029, f:5028, birthday: "28.10.1906", deathDay: "1944", source: picMan },   // Daten von St. Li.
+        { key: 6072, n: "Ferdinand Heinrichs", s: "M", m: 5029, f:5028, birthday: "21.03.1908", deathDay: "1944", source: picMan },   // Daten von St. Li.
+        { key: 6073, n: "Ludwig Heinrichs", s: "M", m: 5029, f:5028, ux: 6083, birthday: "20.05.1909", source: picMan },   // Daten von St. Li.
+        { key: 6074, n: "Gertrud Heinrichs", s: "F", m: 5029, f:5028, birthday: "23.02.1911", source: picWoman },   // Daten von St. Li.
+        { key: 6075, n: "Magdalena Heinrichs", s: "F", m: 5029, f:5028, birthday: "12.12.1913", source: picWoman },   // Daten von St. Li.
+        { key: 6076, n: "Adolf Heinrichs", s: "M", m: 5029, f:5028, ux: 6086, birthday: "10.11.1917", source: picMan },   // Daten von St. Li.
+        { key: 6077, n: "(Gertrud) Elisabeth Heinrichs", s: "F", m: 5029, f:5028, birthday: "23.07.1902", source: picWoman },   // Daten von St. Li.
+
+        { key: 6078, n: "Christine ?", s: "F", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 6079, n: "Billa ?", s: "F", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 6082, n: "Katharina ?", s: "F", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 6083, n: "Christine ?", s: "F", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 6084, n: "Karl Meyer", s: "F", ux: 6074, marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 6085, n: "Andreas Gondermann", s: "M", ux: 6075, marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+        { key: 6086, n: "Gertrud Gondermann", s: "F", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 6087, n: "Mann v. Gert. Elis. Heinrichs", s: "M", ux: 6077, source: picMan },   // Daten von St. Li.
+
+        { key: 6088, n: "Ján Jacko", s: "M", m: 5031, f:5030, ux: 6089, birthday: "30.05.1924", bornplace: "* Strba", deathDay: "08.05.1988", source: picMan },   // Daten von St. Li.
+        { key: 6089, n: "Zuzana Jacková (Kubisová)", s: "F", m: 5033, f:5032, birthday: "15.05.1931", bornplace: "* Strba", source: picWoman },   // Daten von St. Li.
+
+        { key: 6090, n: "Július (Dúla) žigray (Zsigrai)", s: "M", m: 5035, f:5034, ux: 6091, birthday: "02.01.1923", bornplace: "", deathDay: "14.03.1986", marriageplace: "", marriageDay: "∞ 1950", source: picMan },   // Daten von St. Li.
+        { key: 6091, n: "Anna Ondrušková", s: "F", m: 5037, f:5036, birthday: "27.07.1932", bornplace: "* ", deathDay: "10.12.2005", marriageplace: "", marriageDay: "∞ 1950", source: picWoman },   // Daten von St. Li.
+        { key: 6092, n: "Maria Ondrušková", s: "F", m: 5037, f:5036, birthday: "21.03.1929", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 6093, n: "Pavol Ondrušková", s: "M", ux: 609901, m: 5037, f:5036, birthday: "27.07.1930", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+        { key: 6094, n: "Katarína Ondrušková", s: "F", m: 5037, f:5036, birthday: "03.10.1935", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ 1955", source: picWoman },   // Daten von St. Li.
+        { key: 6095, n: "Terézia Ondrušková", s: "F", m: 5037, f:5036, birthday: "08.08.1938", bornplace: "* ", deathDay: "01.02.2008", marriageplace: "", marriageDay: "∞ 19.04.1958", source: picWoman },   // Daten von St. Li.
+        { key: 6096, n: "Ján Ondrušková", s: "M", ux: 609904, m: 5037, f:5036, birthday: "20.12.1945", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+        { key: 6097, n: "Justína Ondrušková", s: "F", m: 5037, f:5036, birthday: "05.02.1941", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ 1961", source: picWoman },   // Daten von St. Li.
+        { key: 6098, n: "Jozef Ondrušková", s: "M", ux: 609906, m: 5037, f:5036, birthday: "22.06.1949", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+
+        { key: 6099, n: "Pavol Uhrin", s: "M",ux: 6092, birthday: "20.01.1927", bornplace: "* ", deathDay: "19.03.2007", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+        { key: 609901, n: "Alžbethá Kahulačová", s: "F", birthday: "1929", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 609902, n: "Pavol Vitko", s: "M", ux: 6094, birthday: "27.04.1932", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ 1955", source: picMan },   // Daten von St. Li.
+        { key: 609903, n: "František Vitko", s: "M", ux: 6095, birthday: "18.12.1935", bornplace: "* ", deathDay: "??.10.1997", marriageplace: "", marriageDay: "∞ 19.04.1958", source: picMan },   // Daten von St. Li.
+        { key: 609904, n: "Katarína Vitková", s: "F", birthday: "14.09.1947", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+        { key: 609905, n: "Milán Halamček", s: "M", ux: 6097, birthday: "28.08.1936", bornplace: "* ", deathDay: "15.07.2008", marriageplace: "", marriageDay: "∞ 1961", source: picMan },   // Daten von St. Li.
+        { key: 609906, n: "Olga Pavlasová", s: "F", birthday: "1953", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+
+        { key: 609907, n: "Vater Dörnbrack", s: "M", ux: 609908, birthday: "", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picMan },   // Daten von St. Li.
+        { key: 609908, n: "Mutter Dörnbrack", s: "F", birthday: "", bornplace: "* ", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },   // Daten von St. Li.
+
+//############################################################################################################################################################################
+      // Ebene 7 (7000)
+//############################################################################################################################################################################
+
+        { key: 7001, n: "Katharina Boltersdorf", s: "F", m: 6008, f:6002, birthday: "22.09.1947", bornplace: "* Ginnick", diedplace: "† ", job: "Verkäuferin", marriageplace: "Vettweiß", marriageDay: "∞ 15.03.1968", livingplace: "Birgel", source: "pics/Katharina Boltersdorf.JPG" },
+        { key: 7002, n: "Johann Michael Boltersdorf", s: "M", m: 6008, f:6002, birthday: "04.01.1950", bornplace: "* Ginnick", diedplace: "† ", job: "Elektriker", livingplace: "Ginnick", source: "pics/Hans_Boltersdorf_c.JPG" },
+        { key: 7003, n: "Peter Boltersdorf", s: "M", m: 6008, f:6002, ux:7033, birthday: "17.04.1951", bornplace: "* Ginnick", diedplace: "† ", job: "Verpackungstechniker", marriageplace: "Lima", marriageDay: "∞ 26.11.1979", livingplace: "Soller", source: "pics/Peter_Boltersdorf_1951_d.JPG" },
+        { key: 7004, n: "Peter Boltersdorf", s: "M", m: 6008, f:6002, ux:7045, birthday: "17.04.1951", bornplace: "* Ginnick", diedplace: "† ", job: "Verpackungstechniker", marriageplace: "Lima", marriageDay: "∞ 26.11.1979", livingplace: "Soller", source: "pics/Peter_Boltersdorf_1951_d.JPG" },
+        { key: 7005, n: "Paul Boltersdorf", s: "M", m: 6008, f:6002, ux: 7008, birthday: "20.09.1952", deathDay: "04.07.2021", bornplace: "* Ginnick", diedplace: "† Aachen (Uniklinik)", age: "68", job: "Dipolm Sportlehrer", marriageplace: "Titz", marriageDay: "∞ 23.04.1999", livingplace: "Schmidt", source: "pics/Paul Boltersdorf.JPG" },
+        { key: 7006, n: "Roberta Boltersdorf", s: "F", m: 6008, f:6002, birthday: "17.09.1955", bornplace: "* Ginnick", diedplace: "† ", job: "Hauswirtschafterin", marriageplace: "Düren", marriageDay: "∞ 29.09.1972", livingplace: "Ginnick", source: "pics/Roberta Boltersdorf_1955.JPG" },
+
+        { key: 7007, n: "Peter Dörnbrack", s: "M", m: 609908, f:609907, ux: 7001, birthday: "22.11.1944", deathDay: "12.09.2005", bornplace: "* Neustrelitz", diedplace: "† Birgel", age: "60", job: "Schlosser", marriageplace: "Vettweiß", marriageDay: "∞ 15.03.1968", livingplace: "Birgel", source: "pics/Peter Doernbrack.JPG" },
+        { key: 700701, n: "Rainer Dörnbrack", s: "M", m: 609908, f:609907, birthday: "", deathDay: "", bornplace: "* ", diedplace: "† ", age: "", job: "", marriageplace: "", marriageDay: "∞ ", livingplace: "", source: picMan },
+
+        { key: 7008, n: "Sally Koskei", s: "F", m: 6052, f:6051, birthday: "04.09.1977", bornplace: "* Uasin Gisu (Kenia)", diedplace: "† ", job: "Sportlerin", marriageplace: "Titz", marriageDay: "∞ 23.04.1999", livingplace: "Schmidt", source: "pics/Sally Koskei.JPG" },
+
+
+        { key: 7010, n: "Josef Rudolf Falter", s: "M", m: 6004, f:6029, ux: 7012, birthday: "25.12.1948", bornplace: "* Obermaubach", diedplace: "† ", job: "Maschinenbauer/Lehrer", marriageplace: "Freiburg", marriageDay: "∞ 18.01.1977", livingplace: "MG-Rheydt", source: "pics/Josef Rudolf Falter.JPG" },
+        { key: 7011, n: "Wilhelm Falter", s: "M", m: 6004, f:6029, birthday: "04.04.1950", deathDay: "15.07.1988", bornplace: "* Obermaubach", diedplace: "† Großkirchheim / Kärnten (Österreich)", age: "38", job: "Bauschlosser/Lehrer", livingplace: "Remscheid", source: "pics/Wilhelm_Falter.JPG" },
+
+        { key: 7012, n: "Bernhild Angelika Arlt", s: "F", birthday: "06.05.1953", bornplace: "* Hildesheim", diedplace: "† ", job: "Lehrerin", marriageplace: "Freiburg", marriageDay: "∞ 18.01.1977", livingplace: "MG-Rheydt", source: "pics/Bernhild Angelika Arlt.JPG" },
+
+        { key: 7013, n: "Elisabeth Sistig", m: 6007, f:6030, s: "F", birthday: "19.10.1952", bornplace: "* Ginnick", diedplace: "† ", job: "Bürokauffrau", marriageplace: "Kreuzau", marriageDay: "∞ 17.09.1971", livingplace: "Winden", source: "pics/Elisabeth Sistig.JPG" },
+        { key: 7014, n: "Gottfried Sistig", m: 6007, f:6030, ux: 7017, s: "M", birthday: "11.05.1957", bornplace: "* Winden", diedplace: "† ", job: "Dachdecker", marriageplace: "Kreuzau", marriageDay: "∞ 11.05.2007", livingplace: "Winden", source: "pics/Gottfried Sistig.JPG" },
+        { key: 7015, n: "Franz Sistig", m: 6007, f:6030, s: "M", birthday: "16.05.1960", bornplace: "* Winden", diedplace: "† ", job: "Autoschlosser/Drucker", marriageDay: "∞ ", livingplace: "Winden", source: "pics/Franz S. Sistig.JPG" },
+        { key: 7016, n: "Roberta Sistig", m: 6007, f:6030, s: "F", birthday: "31.12.1963", bornplace: "* Winden", diedplace: "† ", job: "Industriekauffrau", marriageplace: "Kreuzau", marriageDay: "∞ 31.08.1990", livingplace: "Winden", source: "pics/Roberta Sistig.JPG" },
+
+        { key: 7017, n: "Britt Wachholz", s: "F", birthday: "10.03.1968", bornplace: "* Döhlen", diedplace: "† ", job: "Verkäuferin/Altenpflegerin", marriageplace: "Kreuzau", marriageDay: "∞ 11.05.2007", livingplace: "Winden", source: picWoman },
+
+        { key: 7018, n: "Roland Esser", ux: 7016, s: "M", birthday: "08.10.1956", bornplace: "* Kreuzau", diedplace: "† ", job: "Lagerist", marriageplace: "Kreuzau", marriageDay: "∞ 31.08.1990", livingplace: "Winden", source: picMan },
+
+        { key: 7019, n: "Christian Pütz", ux: 7013, s: "M", birthday: "02.06.1947", bornplace: "* Seehausen", diedplace: "† ", job: "Drucker", marriageplace: "Kreuzau", marriageDay: "∞ 17.09.1971", livingplace: "Winden", source: "pics/Christian Puetz.JPG" },
+
+        { key: 7020, n: "Bernd Clemens", s: "M", m: 6032, f:6035, birthday: "1941", bornplace: "*Düren-Rölsdorf", diedplace: "† ", source: picMan },
+
+        { key: 7021, n: "Reinhold J. Becker", s: "M", m: 6036, f:6031, birthday: "06.03.1949", bornplace: "* Drove", diedplace: "† ", source: picMan },
+
+        { key: 7022, n: "Johannes Leisten", s: "M", m: 6044, f:6046, birthday: "31.05.1952", deathDay: "09.01.2003", age: "50", bornplace: "* Boich", diedplace: "† Düren", source: picMan },
+        { key: 7054, n: "Tim Leisten", s: "M", m: 6044, f:6046, source: picMan }, // Daten von St. Li.
+
+        { key: 7023, n: "Johann We. Fischer", s: "M", m: 6043, f:6045, birthday: "26.08.1945", bornplace: "* Boich", diedplace: "† ", source: picMan },
+
+        { key: 7024, n: "Erwin Hubert Kempener", s: "M", m: 6039, f:6047, birthday: "14.10.1941", bornplace: "* Krauthausen", diedplace: "† ", source: picMan },
+        { key: 7025, n: "Willi Kempener", s: "M", m: 6039, f:6047, birthday: "07.03.1945", bornplace: "* Elsig", diedplace: "† ", source: picMan },
+
+        { key: 7026, n: "Peter Boltersdorf", s: "M", m: 6049, f:6041, birthday: "09.09.1945", bornplace: "* ", diedplace: "† ", source: picMan },
+
+        { key: 7027, n: "Dieter Kiefer", s: "M", ux: 7028, birthday: "03.12.1956", bornplace: "* ", diedplace: "† ", source: "pics/Dieter Kiefer.JPG", livingplace: "Großbüllesheim" },
+
+        { key: 7028, n: "Evelyn Rosario", s: "F", birthday: "11.01.1963", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", livingplace: "Großbüllesheim", source: "pics/Evelyn Rosario.JPG" },
+
+        { key: 7029, n: "Norbert Steven", s: "M", m: 6020, f:6021, bornplace: "* ", diedplace: "† ", source: picMan },
+        { key: 7030, n: "Jürgen Steven", s: "M", m: 6020, f:6021, bornplace: "* ", diedplace: "† ", source: picMan },
+
+        { key: 7031, n: "Ivonne Steven", s: "F", m: 6024, f:6022, bornplace: "* ", diedplace: "† ", source: picWoman },
+
+        { key: 7032, n: "Manuel Torres", s: "M", m: 6026, f:6025, ux: 7039, bornplace: "* ", diedplace: "† ", source: "pics/Manuel_Torres_d.JPG" },
+        { key: 7033, n: "Laura Torres (1. Frau)", m: 6026, f:6025, s: "F", birthday: "09.10.1956", bornplace: "* Lima", diedplace: "† ", marriageplace: "Lima", marriageDay: "∞ 26.11.1979", livingplace: "Kreuzau", source: "pics/Laura Torres_d.JPG" },
+        { key: 7034, n: "Esperanza Torres", m: 6026, f:6025, s: "F", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", livingplace: "Lima", source: "pics/Esperanza Torres_b.JPG" },
+        { key: 7035, n: "Daniel Torres", s: "M", m: 6026, f:6025, ux: 7041, deathDay: "16.06.2005", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Daniel Torres_b.jpg" },
+        { key: 7036, n: "Miguel Torres", s: "M", m: 6026, f:6025, ux: 7042, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Miguel Torres_b.JPG" },
+        { key: 7037, n: "Miguel Torres", s: "M", m: 6026, f:6025, ux: 7043, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Miguel Torres_b.JPG" },
+        { key: 7038, n: "Rafael Torres", s: "M", m: 6026, f:6025, ux: 7044, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Rafael Torres.JPG" },
+
+        { key: 7039, n: "Elsa", s: "F", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Elsa_b.JPG" },
+
+        { key: 7040, n: "Alfredo", s: "M", ux: 7034, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: picMan },
+
+        { key: 7041, n: "Cecilia (1. Frau)", s: "F", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: picWoman },
+
+        { key: 7042, n: "Elisabeth (1. Frau)", s: "F", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: picWoman },
+        { key: 7043, n: "Lydia (2. Frau)", s: "F", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Lydia.JPG" },
+
+        { key: 7044, n: "Queta", s: "F", bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Queta.JPG" },
+
+        { key: 7045, n: "Antonina Zhuykova (2.Frau)", s: "F", birthday: "12.04.1966", bornplace: "* Ukraine", diedplace: "† ", marriageDay: "∞ ", source: "pics/Antonina.JPG" },
+
+        { key: 7046, n: "Rainer Lubek", s: "M", m: 6055, f:6054, ux: 7047, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Rainer_Lubeck.JPG" },
+        { key: 7047, n: "Beate Brembeck", s: "F", m: 6056, f:6057, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: "pics/Beate_Brembeck.jpg" },
+
+        { key: 7048, n: "Antonina Zhuykova", s: "F", birthday: "12.04.1966", bornplace: "* Ukraine", diedplace: "† ", marriageDay: "∞ ", source: "pics/Antonina.JPG" },
+        { key: 7049, n: "Vater Zhuykova (1. Mann)", s: "M", ux: 7048, bornplace: "* ", diedplace: "† ", marriageDay: "∞ ", source: picMan },
+
+        { key: 7050, n: "Renate Weber", s: "F", m: 6014, f:6050, source: "pics/Renate_o_Hildegard_Weber.JPG" },  // Daten von St. Li.
+        { key: 7051, n: "Manfred Weber", s: "M", m: 6014, f:6050, ux: 7055, source: "pics/Manfed_Weber.JPG" },  // Daten von St. Li.
+        { key: 7052, n: "Hildegard Weber", s: "F", m: 6014, f:6050, source: picWoman },  // Daten von St. Li.
+        { key: 7053, n: "Günther Weber", s: "M", m: 6014, f:6050, ux: 7056, source: "pics/Guenther_Weber.JPG" },  // Daten von St. Li.
+
+        /* ID 7054 siehe Zeile 574 */
+
+        { key: 7055, n: "Frau v. Manfred", s: "F", source: picWoman },  // Info von Pe. Bolt.
+
+        { key: 7056, n: "Agnes", s: "F", source: "pics/Agnes_xxx.jpg" },  // Info von Pe. Bolt.
+
+        { key: 7057, n: "Ingeborg Heinrichs", s: "F", m: 6078, f:6069, source: picWoman },  // Daten von St. Li.
+
+        { key: 7058, n: "Hubertine Heinrichs", s: "F", m: 6079, f:6070, source: picWoman },  // Daten von St. Li.
+        { key: 7059, n: "Adolf Kohlgraf", s: "M", ux: 7058, source: picMan },  // Daten von St. Li.
+        { key: 7060, n: "Josef Heinrichs", s: "M", m: 6079, f:6070, source: picMan },  // Daten von St. Li.
+        { key: 7061, n: "Margarete Heinrichs", s: "F", m: 6079, f:6070, source: picWoman },  // Daten von St. Li.
+
+        { key: 7062, n: "Alfons Heinrichs", s: "M", m: 6082, f:6081, source: picMan },  // Daten von St. Li.
+        { key: 7063, n: "Hermann Heinrichs", s: "M", m: 6082, f:6081, source: picMan },  // Daten von St. Li.
+
+        { key: 7064, n: "Elisabeth Heinrichs", s: "F", m: 6083, f:6073, source: picWoman },  // Daten von St. Li.
+        { key: 7065, n: "Günther Heinrichs", s: "M", m: 6083, f:6073, source: picMan },  // Daten von St. Li.
+        { key: 7066, n: "Karl Heinrichs", s: "M", m: 6083, f:6073, source: picMan },  // Daten von St. Li.
+
+        { key: 7067, n: "Fritz Nowak", s: "M", ux: 7064, source: picMan },  // Daten von St. Li.
+      
+        { key: 7068, n: "(Heinz) Egon Meyer", s: "M", m: 6084, f:6074, ux: 7071, birthday: "22.04.1940", source: picMan },  // Daten von St. Li.
+        { key: 7069, n: "Marliese Meyer", s: "F", m: 6084, f:6074, birthday: "23.10.1941", deathDay: "10.08.2013", source: picWoman },  // Daten von St. Li.
+        { key: 7070, n: "Elvira Meyer", s: "F", m: 6084, f:6074, birthday: "??.07.1948", source: picWoman },  // Daten von St. Li.
+
+        { key: 7071, n: "Hedwig Berbuir", s: "F", birthday: "14.04.1940", source: picWoman },  // Daten von St. Li.
+        { key: 7072, n: "Karl Heinz Klein", s: "M", ux: 7069, birthday: "09.08.1940", source: picMan },  // Daten von St. Li.
+        { key: 7073, n: "Helmut Schneiders", s: "M", ux: 7070, source: picMan },  // Daten von St. Li.
+
+        { key: 7074, n: "Resi Gondermann", s: "F", m: 6075, f:6085, source: picWoman },  // Daten von St. Li.
+        { key: 7075, n: "Gertrud Gondermann", s: "F", m: 6075, f:6085, source: picWoman },  // Daten von St. Li.
+
+        { key: 7076, n: "Heinz Gülden", s: "M", ux: 7074, birthday: "07.01.1940", source: picMan },  // Daten von St. Li.
+
+        { key: 7077, n: "Eugen Heinrichs", s: "M", m: 6086, f:6076, ux: 7082, source: picMan },  // Daten von St. Li.
+        { key: 7078, n: "André Heinrichs", s: "M", m: 6086, f:6076, ux: 7083, source: picMan },  // Daten von St. Li.
+        { key: 7079, n: "Josef Heinrichs", s: "M", m: 6086, f:6076, ux: 7085, source: picMan },  // Daten von St. Li.
+        { key: 7080, n: "Trudi Heinrichs", s: "F", m: 6086, f:6076, source: picWoman },  // Daten von St. Li.
+        { key: 7081, n: "Christel Heinrichs", s: "F", m: 6086, f:6076, source: picWoman },  // Daten von St. Li.
+
+        { key: 7082, n: "Marlies ?", s: "F", source: picWoman },  // Daten von St. Li.
+        { key: 7083, n: "Maria ?", s: "F", source: picWoman },  // Daten von St. Li.
+        { key: 7084, n: "Josef Schmitz", s: "M", ux: 7080, source: picMan },  // Daten von St. Li.
+        { key: 7085, n: "Sibylle ?", s: "F", source: picWoman },  // Daten von St. Li.
+        { key: 7086, n: "Paul Faßbender", s: "M", ux: 7081, source: picMan },  // Daten von St. Li.
+
+        { key: 7087, n: "Lisa", s: "F", m: 6077, f:6087, deathDay: "16.11.1944", deathplace: "Düren (gefallen)", source: picWoman },  // Daten von St. Li.
+
+        { key: 7088, n: "Peter Josef Linden", s: "M", m: 6061, f:6060, birthday: "31.05.1945", deathDay: "28.07.1954", source: picMan },  // Daten von St. Li.
+        { key: 7089, n: "(Anna) Gertrud Linden", s: "F", m: 6061, f:6060, birthday: "08.07.1946", marriageplace: "", marriageDay: "∞ 25.10.1967", source: picWoman },  // Daten von St. Li.
+        { key: 7090, n: "Hans-Peter Linden", s: "M", m: 6061, f:6060, ux: 7094, birthday: "26.10.1948", source: picMan },  // Daten von St. Li.
+        { key: 7009, n: "Adolf Linden", s: "M", m: 6061, f:6060, ux: 7006, birthday: "21.07.1950", bornplace: "* Berg/Floisdorf", diedplace: "† ", job: "Autoschlosser/Baggerfahrer", marriageplace: "Düren", marriageDay: "∞ 29.09.1972", livingplace: "Ginnick", source: "pics/Adolf Linden.JPG" },  // Daten von St. Li.
+        { key: 7091, n: "(Anna) Luise Linden", s: "F", m: 6061, f:6060, birthday: "13.10.1951", source: picWoman },  // Daten von St. Li.
+        { key: 7092, n: "(Karl) Andreas Linden", s: "M", m: 6061, f:6060, ux: 7098, birthday: "04.11.1954", source: picMan },  // Daten von St. Li.
+
+        { key: 7093, n: "Franz Tenten", s: "M", ux: 7089, birthday: "25.10.1947", marriageplace: "", marriageDay: "∞ 25.10.1967", source: picMan },  // Daten von St. Li.
+        { key: 7094, n: "Elisabeth Hahn", s: "F", birthday: "02.12.1950", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+
+        { key: 7095, n: "Ján Jacko", s: "M", m: 6089, f:6088, ux: 7096, birthday: "17.11.1950", marriageplace: "", marriageDay: "∞ 05.04.1975", source: picMan },  // Daten von St. Li.
+
+        { key: 7096, n: "Mária žigrajová", s: "F", m: 6091, f:6090, birthday: "15.09.1956", marriageplace: "", marriageDay: "∞ 05.04.1975", source: picWoman },  // Daten von St. Li.
+        { key: 709601, n: "Ladislav žigrajová", s: "F", m: 6091, f:6090, birthday: "26.09.1950", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709602, n: "Eva žigrajová", s: "F", m: 6091, f:6090, birthday: "15.12.1964", deathDay: "27.06.2014", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709603, n: "Katarína žigrajová", s: "F", m: 6091, f:6090, birthday: "24.11.1959", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709606, n: "Anna žigrajová", s: "F", m: 6091, f:6090, birthday: "05.08.1953", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709607, n: "Marta žigrajová", s: "F", m: 6091, f:6090, birthday: "04.08.1955", deathDay: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+
+        { key: 709604, n: "Jozef Varga", s: "M", ux: 709602, birthday: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709605, n: "Zdeno Homiak", s: "M", ux: 709603, birthday: "18.12.1955", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709608, n: "Juraj Slavskosky", s: "M", ux: 709606, birthday: "15.11.1946", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709609, n: "Jozef Dubjel", s: "M", ux: 709607, birthday: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+        { key: 7097, n: "Rolf Esch", s: "M", ux: 7091, birthday: "10.02.1943", deathDay: "22.06.2018", source: "pics/esch_rolf.jpg" },  // Daten von St. Li.
+
+        { key: 7098, n: "Monika Waldhausen", s: "F", birthday: "21.04.1959", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+
+        { key: 709901, n: "Erich Linden", s: "M", m: 6059, f:6058, birthday: "02.06.1941", bornplace: "", deathDay: "12.10.1943", deathplace: "Oberreiferscheid", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709902, n: "Gerda Elisabeth Linden", s: "F", m: 6059, f:6058, birthday: "04.03.1947", bornplace: "", deathDay: "03.08.1948", deathplace: "Oberreiferscheid", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709903, n: "Huberta Linden", s: "F", m: 6059, f:6058, birthday: "10.09.1942", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709904, n: "Werner (Hubert) Linden", s: "M", ux: 70990401, m: 6059, f:6058, birthday: "22.11.1937", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709905, n: "Fina (Josefina) Linden", s: "F", m: 6059, f:6058, birthday: "28.01.1930", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709906, n: "(Johann) Josef Linden", s: "M", ux: 70990601, m: 6059, f:6058, birthday: "29.09.1934", bornplace: "", deathDay: "01.09.1979", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709907, n: "Kurt Linden", s: "M", m: 6059, f:6058, ux: 70990701, birthday: "18.10.1932", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709908, n: "Martin Linden", s: "M", m: 6059, f:6058, ux: 70990801, birthday: "22.04.1939", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709909, n: "Helmut Linden", s: "M", m: 6059, f:6058, ux: 70990901, birthday: "11.09.1949", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709910, n: "(Katharina) Käthe Linden", s: "F", m: 6059, f:6058, birthday: "28.01.1930", bornplace: "", deathDay: "12.12.1991", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+
+        { key: 70990301, n: "Georg ?", s: "M", ux: 709903, birthday: "03.01.1946", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 70990401, n: "Anita ?", s: "F", birthday: "28.02.1941", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 70990501, n: "Heinrich Mertens", s: "M", ux: 709905, birthday: "05.03.1932", bornplace: "", deathDay: "21.08.1974", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 70990601, n: "Ursula ?", s: "F", birthday: "29.07.1941", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 70990701, n: "Hilde Schumacher", s: "F", birthday: "03.09.1938", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 70990801, n: "Erna ?", s: "F", birthday: "03.09.1938", bornplace: "", deathDay: "??.09.1990", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 70990901, n: "Bernadette ?", s: "F", birthday: "16.04.1951", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 70991001, n: "Könn Lorenz", s: "M", ux: 709910, birthday: "1927", bornplace: "", deathDay: "2014", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+        { key: 709911, n: "Reinhold Balk", s: "M", m: 6009, f:600901, ux: 70991101, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709912, n: "Ingrid Balk", s: "F", m: 6009, f:600901, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709913, n: "Rita Balk", s: "F", m: 6009, f:600901, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+
+        { key: 70991101, n: "Sonja ?", s: "F", birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 70991201, n: "Erwin Kater", s: "M", ux: 709912, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 70991301, n: "Hans Doll", s: "M", ux: 709913, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+        { key: 709914, n: "Rudi Schmitt", s: "M", m: 601001, f:6010, ux: 709915, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709915, n: "Marga ?", s: "F", m: 601001, f:6010, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+
+        { key: 709916, n: "Irene Schmitt", s: "F", m: 601101, f:6011, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 70991601, n: "Manfred ?", s: "M", ux: 709916, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709917, n: "Maria Schmitt", s: "F", m: 601101, f:6011, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709918, n: "Willi Schmitt", s: "M", m: 601101, f:6011, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+        { key: 709919, n: "Eberhard Schmitt", s: "M", m: 601201, f:6012, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709920, n: "Hans Joachim Schmitt", s: "M", m: 601201, f:6012, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+        { key: 709921, n: "Ingeborg", s: "F", m: 601301, f:6013, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+
+        { key: 709922, n: "Renate Weber", s: "F", m: 6014, f:601401, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709923, n: "Manfred Weber", s: "M", m: 6014, f:601401, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709924, n: "Hildegard Weber", s: "F", m: 6014, f:601401, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 709925, n: "Günther Weber", s: "M", m: 6014, f:601401, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+        { key: 709926, n: "Josef Düpper", s: "M", m: 6019, f:6018, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709927, n: "Paul (Zwilling) Düpper", s: "M", m: 6019, f:6018, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 709927, n: "Robert (Zwilling) Düpper", s: "M", m: 6019, f:6018, birthday: "", bornplace: "", deathDay: "", deathplace: "", marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+
+
+//############################################################################################################################################################################
+      // Ebene 8 (8000)
+//############################################################################################################################################################################
+
+        { key: 8001, n: "David Boltersdorf", s: "M", m: 7033, f:7003, ux: 8005, birthday: "20.04.1980", bornplace: "* Düren", diedplace: "† ", job: "Kunststoffetchniker/Fachinformatiker", marriageplace: "Euskirchen", marriageDay: "∞ 07.08.2012", livingplace: "Euskirchen", source: "pics/David Boltersdorf.jpg" },
+        { key: 8002, n: "Daniel Boltersdorf", s: "M", ux: 8024, m: 7033, f:7003, birthday: "15.06.1983", bornplace: "* Düren", diedplace: "† ", job: "Kunststoffetchniker", marriageplace: "Velbert", marriageDay: "∞ 19.08.2006", livingplace: "Velbert", source: "pics/Daniel_Boltersdorf_d.JPG" },
+        { key: 8003, n: "Patrick Boltersdorf", s: "M", m: 7033, f:7003, birthday: "07.12.1992", bornplace: "* Düren", diedplace: "† ", job: "Heilerziehungspfleger", livingplace: "Kreuzau", source: "pics/Patrick Boltersdorf.JPG" },
+
+        { key: 8004, n: "Carmina Kiefer", s: "F", m: 7028, f:7027, birthday: "05.04.1990", bornplace: "* Gelsenkirchen", diedplace: "† ", source: "pics/Carmina Kiefer.JPG" },
+        { key: 8005, n: "Manuela Nadine Kiefer", s: "F", m: 7028, f:7027, birthday: "19.11.1991", bornplace: "* Gelsenkirchen", diedplace: "† ", marriageplace: "Euskirchen", marriageDay: "∞ 07.08.2012", livingplace: "Euskirchen", source: "pics/Manuela Kiefer.JPG" },
+        { key: 8006, n: "Stephan Kiefer", s: "M", m: 7028, f:7027, birthday: "03.08.1994", bornplace: "* Euskirchen", diedplace: "† ", livingplace: "Großbüllesheim", source: "pics/Stephan Kiefer.JPG" },
+        { key: 8007, n: "Annabell Kiefer", s: "F", m: 7028, f:7027, birthday: "27.06.1996", bornplace: "* Duisburg", diedplace: "† ", source: "pics/Annabell_Kiefer_c.JPG" },
+
+        { key: 8008, n: "Manuel Torres", s: "M", m: 7039, f:7032, bornplace: "* ", diedplace: "† ", source: "pics/Manuel Torres_2_b.JPG" },
+        { key: 8009, n: "Fernando Torres", s: "M", m: 7039, f:7032, bornplace: "* ", diedplace: "† ", source: "pics/Fernando Torres.JPG" },
+        { key: 8010, n: "Diana Torres", s: "F", m: 7039, f:7032, bornplace: "* ", diedplace: "† ", source: "pics/Diana Torres.JPG" },
+        { key: 8011, n: "Ruth Torres", s: "F", m: 7039, f:7032, bornplace: "* ", diedplace: "† ", source: "pics/Ruth Torres.JPG" },
+
+        { key: 8012, n: "Adam", s: "M", ux: 8010, bornplace: "* ", diedplace: "† ", source: "pics/Adam.JPG" },
+
+        { key: 8013, n: "Ronald", s: "M", ux: 8011, bornplace: "* ", diedplace: "† ", source: "pics/Ronald.JPG" },
+
+        { key: 8014, n: "Jorge", s: "M", m: 7034, f:7040, ux: 8015, bornplace: "* ", diedplace: "† ", source: "pics/Jorge.jpg" },
+
+        { key: 8015, n: "Sintia", s: "F", bornplace: "* ", diedplace: "† ", source: picWoman },
+
+        { key: 8016, n: "Heidi Torres", m: 7041, f:7035, s: "F", bornplace: "* ", diedplace: "† ", source: "pics/Heidi.JPG" },
+        { key: 8017, n: "Daniel Julio Torres", m: 7041, f:7035, s: "M", bornplace: "* ", diedplace: "† ", source: "pics/Daniel Julio Torres.JPG" },
+
+        { key: 8018, n: "Mechita Torres", m: 7042, f:7036, s: "F", bornplace: "* ", diedplace: "† ", source: "pics/Mechita Torres.JPG" },
+        { key: 8019, n: "Miguel Torres", m: 7042, f:7036, s: "M", bornplace: "* ", diedplace: "† ", source: "pics/Miguel Torres_2.JPG" },
+
+        { key: 8020, n: "Jacky Torres", m: 7043, f:7037, s: "F", bornplace: "* ", diedplace: "† ", source: "pics/Jacky Torres.JPG" },
+        { key: 8021, n: "Laura Torres", m: 7043, f:7037, s: "F", bornplace: "* ", diedplace: "† ", source: "pics/Laura Torres_2.JPG" },
+
+        { key: 8022, n: "Mann Laura Torres", s: "M", ux: 8021, bornplace: "* ", diedplace: "† ", source: picMan },
+
+        { key: 8023, n: "Tabea Lubek", m: 7047, f:7046, s: "F", bornplace: "* ", diedplace: "† ", source: picWoman },
+        { key: 8024, n: "Miriam Lubek", m: 7047, f:7046, s: "F", birthday: "23.10.1982", bornplace: "* ", diedplace: "† ", marriageplace: "Velbert", marriageDay: "∞ 19.08.2006", livingplace: "Velbert", source: "pics/Miriam Lubek.JPG" },
+        { key: 8025, n: "Timon Lubek", m: 7047, f:7046, s: "M", bornplace: "* ", diedplace: "† ", source: picMan },
+
+        { key: 8026, n: "Michaela Dörnbrack", m: 7001, f:7007, s: "F", vir: 8029, birthday: "13.09.1968", bornplace: "* Birkesdorf", diedplace: "† ", job: "Textilstopferin", marriageplace: "Düren", marriageDay: "∞ 21.07.1995", livingplace: "Gürzenich", source: "pics/Michaela Doernbrack_b.JPG" },
+        { key: 8027, n: "Marion Dörnbrack", m: 7001, f:7007, s: "F", birthday: "14.03.1978", bornplace: "* Lendersdorf", diedplace: "† ", job: "Schneiderin", marriageplace: "Remscheid", marriageDay: "∞ 11.01.2005", livingplace: "Remscheid", source: "pics/Marion Doernbrack.JPG" },
+
+        { key: 8028, n: "Achim Lewke", s: "M", ux: 8027, birthday: "28.10.1982", bornplace: "* Ennepetal", diedplace: "† ", job: "Dachdecker", marriageplace: "Remscheid", marriageDay: "∞ 11.01.2005", livingplace: "Remscheid", source: "pics/Achim Lewke.JPG" },
+
+        { key: 8029, n: "Stephan Goldbach", s: "M", birthday: "13.07.1969", bornplace: "* Merken", diedplace: "† ", job: "Maschinist", marriageplace: "Düren", marriageDay: "∞ 21.07.1995", livingplace: "Gürzenich", source: picMan },
+
+        { key: 8030, n: "Maria Jerotich Boltersdorf", s: "F", m: 7008, f:7005, birthday: "14.02.2000", bornplace: "* Aachen", diedplace: "† ", source: "pics/Maria_Boltersdorf_d.JPG" },
+
+        { key: 8031, n: "Stephan Linden", s: "M", m: 7006, f:7009, birthday: "23.03.1973", bornplace: "* Düren", diedplace: "† ", marriageplace: "Strba", marriageDay: "∞ 02.05.2009", job: "Chemietechniker", livingplace: "Frankfurt", source: "pics/Stephan Linden.JPG" },
+        { key: 8032, n: "Manuela Linden", s: "F", m: 7006, f:7009, vir: 8033, birthday: "16.11.1975", bornplace: "* Lendersdorf", diedplace: "† ", marriageplace: "Zülpich", marriageDay: "∞ 30.05.2003", job: "Industriekauffrau", livingplace: "Ginnick", source: "pics/Manuela Linden.JPG" },
+
+        { key: 8033, n: "Michael Koch", s: "M", birthday: "02.01.1971", bornplace: "* Zülpich", diedplace: "† ", marriageplace: "Zülpich", marriageDay: "∞ 30.05.2003", job: "Papiermaschinenmechaniker", livingplace: "Ginnick", source: "pics/Michael_Koch_d.JPG" },
+
+        { key: 8034, n: "Monika Jackova", s: "F", m: 7096, f:7095, vir: 8031, birthday: "22.02.1978", bornplace: "* Poprad (Slowakei)", diedplace: "† ", marriageplace: "Strba", marriageDay: "∞ 02.05.2009", job: "Sprachtherapeutin", livingplace: "Frankfurt", source: "pics/Monika Jackova.JPG" },
+        { key: 80342, n: "Lubomír Jackova", s: "M", m: 7096, f:7095, ux: 80343, birthday: "14.11.1975", marriageplace: "", marriageDay: "∞ 16.10.1999", source: picMan },
+
+        { key: 80343, n: "(Mária) Maja Jackova", s: "F", birthday: "07.10.1979", marriageplace: "", marriageDay: "∞ 16.10.1999", source: picWoman },
+
+
+        { key: 8035, n: "Ruslan Zhuykova", m: 7048, f:7049, s: "M", ux: 8037, birthday: "08.06.1987", bornplace: "* ", diedplace: "† ", source: "pics/Ruslan Zuykov.JPG" },
+        { key: 8036, n: "Karina Zhuykova", m: 7048, f:7049, s: "F", birthday: "14.05.1992", bornplace: "* ", diedplace: "† ", source: "pics/Karina_Boltersdorf_d.JPG" },
+
+        { key: 8037, n: "Nicki (Freundin)", s: "F", bornplace: "* ", diedplace: "† ", source: "pics/Nicki.JPG" },
+      
+        { key: 8038, n: "Meike Elisabeth Falter", m: 7012, f:7010, s: "F", birthday: "23.11.1982", bornplace: "* MG-Rheydt", diedplace: "† ", job: "Diplom Sportwiss.", livingplace: "Obermaubach", source: picWoman },
+        { key: 8039, n: "Claus Christian Falter", m: 7012, f:7010, s: "M", birthday: "10.12.1984", bornplace: "* MG-Rheydt", diedplace: "† ", job: "Diplom Biol.; Dr.rer.nat.", source: picMan },
+
+        { key: 8040, n: "Lars Mechler", s: "M", ux: 8038, birthday: "26.01.1982", bornplace: "* Köln", diedplace: "† ", job: "Diplom Sportwiss.", livingplace: "Obermaubach", source: picMan },
+
+        { key: 8041, n: "Sonja Pütz", m: 7013, f:7019, s: "F", birthday: "03.11.1977", bornplace: "* Lendersdorf", diedplace: "† ", job: "Setzerin", livingplace: "Aachen", source: picWoman },
+        { key: 8042, n: "Carsten Flötotto", s: "M", ux: 8041, birthday: "09.03.1975", bornplace: "* Gütersloh", diedplace: "† ", job: "Logopäde", livingplace: "Aachen", source: picMan },
+
+        { key: 8043, n: "Rita Weber", m: 7055, f:7051, s: "F", source: "pics/Rita_Weber.JPG" },
+        { key: 8044, n: "Ingrid Weber", m: 7055, f:7051, s: "F", source: "pics/Ingrid_Weber.JPG" },
+
+        { key: 8045, n: "Frank Meyer", m: 7071, f:7068, ux: 8046, s: "M", birthday: "13.10.1967", source: picMan },
+        { key: 8046, n: "Marcela ?", s: "F", birthday: "01.09.1974", source: picWoman },
+      
+        { key: 8047, n: "Dirk Schneiders", s: "M", m: 7070, f:7073, birthday: "1971", source: picMan },
+
+        { key: 8048, n: "Dagmar Gülden", s: "F", m: 7074, f:7076, source: picWoman },
+        { key: 8049, n: "Jürgen Gülden", s: "M", m: 7074, f:7076, source: picMan },
+
+        { key: 8050, n: "Uwe Chrisant", s: "M", ux: 8048, source: picMan },
+
+        { key: 8051, n: "Marco Heinrichs", s: "M", m: 7082, f:7077, source: picMan },
+
+        { key: 8052, n: "Heike Heinrichs", s: "M", m: 7083, f:7078, source: picMan },
+
+        { key: 8053, n: "Adolf Schmitz", s: "M", m: 7080, f:7084, source: picMan },
+        { key: 8054, n: "Johannes Schmitz", s: "M", m: 7080, f:7084, source: picMan },
+
+        { key: 8055, n: "Marcel Heinrichs", s: "M", m: 7085, f:7079, source: picMan },
+
+        { key: 8056, n: "Sascha Faßbender", s: "M", m: 7081, f:7086, source: picMan },
+
+        { key: 8057, n: "Birgit Tenten", s: "F", m: 7089, f:7093, birthday: "03.06.1970", marriageplace: "", marriageDay: "∞ 10.09.1993", source: picMan },
+        { key: 8058, n: "Karl Scheffenborn", s: "M", ux: 8057, birthday: "13.06.1967", marriageplace: "", marriageDay: "∞ 10.09.1993", source: picMan },
+
+        { key: 8059, n: "Michaela Linden", s: "F", m: 7094, f:7090, birthday: "25.10.1972", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 8060, n: "Claudia Linden", s: "F", m: 7094, f:7090, marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 8061, n: "Markus Linden", s: "M", m: 7094, f:7090, ux: 8064, marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+        { key: 8062, n: "Hein Hemmerich", s: "M", ux: 8059, marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 8063, n: "Josef Zöller", s: "M", ux: 8060, marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+        { key: 8064, n: "Jessica ?", s: "F", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+
+        { key: 8065, n: "Sandra Esch", s: "F", m: 7091, f:7097, birthday: "31.10.1974", marriageplace: "", marriageDay: "∞ ", source: picWoman },  // Daten von St. Li.
+        { key: 8066, n: "Sven Ryfisch", s: "M", birthday: "22.10.1971", ux: 8065, marriageplace: "", marriageDay: "∞ ", source: picMan },  // Daten von St. Li.
+
+        { key: 8067, n: "Nathalie Linden", s: "F", m: 7098, f:7092, birthday: "24.02.1993", source: picWoman },  // Daten von St. Li.
+
+        { key: 8068, n: "Jana Vargová", s: "F", m: 709602, f:709604, birthday: "1983", source: picWoman },  // Daten von St. Li.
+        { key: 8069, n: "Jozef Vargová", s: "F", m: 709602, f:709604, birthday: "1987", source: picMan },  // Daten von St. Li.
+
+        { key: 8070, n: "Katharína Homiaková", s: "F", m: 709603, f:709605, birthday: "1991", source: picWoman },  // Daten von St. Li.
+        { key: 8071, n: "Zdeno Homiaková", s: "M", m: 709603, f:709605, birthday: "1983", source: picMan },  // Daten von St. Li.
+        { key: 8072, n: "Ján Homiaková", s: "M", m: 709603, f:709605, birthday: "1984", source: picMan },  // Daten von St. Li.
+        { key: 8073, n: "Peter Homiaková", s: "M", m: 709603, f:709605, birthday: "1992", source: picMan },  // Daten von St. Li.
+
+        { key: 8074, n: "Juraj Slavskosky", s: "M", m: 709606, f:709608, birthday: "1975", source: picMan },  // Daten von St. Li.
+        { key: 8075, n: "Ján Slavskosky", s: "M", m: 709606, f:709608, birthday: "1981", source: picMan },  // Daten von St. Li.
+
+        { key: 8076, n: "Adriana Dubjelová", s: "F", m: 709607, f:709609, birthday: "1975", source: picWoman },  // Daten von St. Li.
+        { key: 8077, n: "Zuzana Dubjelová", s: "F", m: 709607, f:709609, birthday: "1979", source: picWoman },  // Daten von St. Li.
+        { key: 8078, n: "Mariana Dubjelová", s: "F", m: 709607, f:709609, birthday: "1985", source: picWoman },  // Daten von St. Li.
+        { key: 8079, n: "Lucia Dubjelová", s: "F", m: 709607, f:709609, birthday: "1986", source: picWoman },  // Daten von St. Li.
+
+        { key: 8080, n: "štefan Fridman", s: "M", ux: 8079, birthday: "", source: picMan },  // Daten von St. Li.
+
+        { key: 8081, n: "Magret Mertens", s: "F", m: 709905, f:70990501, birthday: "", source: picWoman },  // Daten von St. Li.
+        { key: 8082, n: "Herbert Mertens", s: "M", ux: 808201, m: 709905, f:70990501, birthday: "", source: picMan },  // Daten von St. Li.
+        { key: 8083, n: "Erwin Mertens", s: "M", ux: 808301, m: 709905, f:70990501, birthday: "", source: picMan },  // Daten von St. Li.
+        { key: 8084, n: "Friedhelm Mertens", s: "M", ux: 808401, m: 709905, f:70990501, birthday: "", source: picMan },  // Daten von St. Li.
+        { key: 8085, n: "Astrid Mertens", s: "F", m: 709905, f:70990501, birthday: "", source: picWoman },  // Daten von St. Li.
+
+        { key: 808201, n: "Gaby ?", s: "F", birthday: "", source: picWoman },  // Daten von St. Li.
+        { key: 808301, n: "Marie-Therese ?", s: "F", birthday: "", source: picWoman },  // Daten von St. Li.
+        { key: 808401, n: "Monika ?", s: "F", birthday: "", source: picWoman },  // Daten von St. Li.
+        { key: 808501, n: "Albert ?", s: "M", ux: 8085, birthday: "", source: picMan },  // Daten von St. Li.
+
+
+//############################################################################################################################################################################
+      // Ebene 9 (9000)
+//############################################################################################################################################################################
+
+        { key: 9001, n: "Vincent Boltersdorf", s: "M", m: 8005, f:8001, birthday: "05.06.2015", bornplace: "* Euskirchen", diedplace: "† ", livingplace: "Euskirchen", source: "pics/Vincent Boltersdorf.JPG" },
+        { key: 9002, n: "Felicia Boltersdorf", s: "M", m: 8005, f:8001, birthday: "23.04.2018", bornplace: "* Euskirchen", diedplace: "† ", livingplace: "Euskirchen", source: "pics/Felicia Boltersdorf.JPG" },
+
+        { key: 9003, n: "Joshua Boltersdorf", s: "M", m: 8024, f:8002, birthday: "14.10.2008", bornplace: "* Velbert", diedplace: "† ", livingplace: "Velbert", source: "pics/Joshua Boltersdorf.JPG" },
+        { key: 9004, n: "Josia Boltersdorf", s: "M", m: 8024, f:8002, birthday: "10.07.2011", bornplace: "* Velbert", diedplace: "† ", livingplace: "Velbert", source: "pics/Josia Boltersdorf.JPG" },
+
+        { key: 9005, n: "Bruno", s: "M", m: 8011, f:8013, bornplace: "* ", diedplace: "† ", source: "pics/Bruno.JPG" },
+
+        { key: 9006, n: "Kind 1", s: "M", m: 8021, f: 8022, bornplace: "* ", diedplace: "† ", source: picMan },
+        { key: 9007, n: "Kind 2", s: "M", m: 8021, f: 8022, bornplace: "* ", diedplace: "† ", source: picMan },
+        { key: 9008, n: "Kind 3", s: "M", m: 8021, f: 8022, bornplace: "* ", diedplace: "† ", source: picMan },
+
+        { key: 9009, n: "Stella Faye Lewke", s: "F", m: 8027, f:8028, birthday: "13.02.2006", bornplace: "* Schwelm", diedplace: "† ", livingplace: "Remscheid", source: "pics/Stella Faye Lewke.JPG" },
+        { key: 9010, n: "Gideon Des. Lewke", s: "M", m: 8027, f:8028, birthday: "01.07.2007", bornplace: "* Schwelm", diedplace: "† ", livingplace: "Remscheid", source: "pics/Gideon Lewke.JPG" },
+
+        { key: 9011, n: "Fabian Goldbach", s: "M", m: 8026, f:8029, birthday: "07.11.1995", bornplace: "* Düren", diedplace: "† ", livingplace: "Gürzenich", source: "pics/Fabian Goldbach.JPG" },
+        { key: 9012, n: "Alexandra Goldbach", s: "F", m: 8026, f:8029, birthday: "10.10.1998", bornplace: "* Düren", diedplace: "† ", livingplace: "Gürzenich", source: "pics/Alexandra_Goldbach_d.JPG" },
+
+        { key: 9013, n: "Niklas Koch", s: "M", m: 8032, f:8033, birthday: "28.09.2005", bornplace: "* Birkesdorf", diedplace: "† ", livingplace: "Ginnick", source: "pics/Niclas_Koch_d.JPG" },
+        { key: 9014, n: "Nils Koch", s: "M", m: 8032, f:8033, birthday: "13.03.2012", bornplace: "* Birkesdorf", diedplace: "† ", livingplace: "Ginnick", source: "pics/Nils_Koch_d.JPG" },
+
+        { key: 9015, n: "Elias Linden", s: "M", m: 8034, f:8031, birthday: "23.12.2013", bornplace: "* Frankfurt", diedplace: "† ", livingplace: "Frankfurt", source: "pics/Elias_Linden_d.jpg" },
+        { key: 9016, n: "Aaron Linden", s: "M", m: 8034, f:8031, birthday: "06.04.2017", bornplace: "* Frankfurt", diedplace: "† ", livingplace: "Frankfurt", source: "pics/Aaron Linden.JPG" },
+
+        { key: 9017, n: "Jaro Mechler", s: "M", m: 8038, f:8040, birthday: "22.04.2016", bornplace: "* Düren", diedplace: "† ", livingplace: "Obermaubach", source: picMan },
+        { key: 9018, n: "Mika Mechler", s: "M", m: 8038, f:8040, birthday: "11.06.2018", bornplace: "* Düren", diedplace: "† ", livingplace: "Obermaubach", source: picMan },
+
+        { key: 9019, n: "Mathis Flötotto", s: "M", m: 8041, f:8042, birthday: "23.01.2006", bornplace: "* Aachen", diedplace: "† ", livingplace: "Aachen", source: picMan },
+        { key: 9020, n: "Milla Flötotto", s: "M", m: 8041, f:8042, birthday: "13.02.2008", bornplace: "* Aachen", diedplace: "† ", livingplace: "Aachen", source: picWoman },
+
+        { key: 9021, n: "Jonas Boltersdorf", s: "M", m: 8037, f:8035, birthday: "20.12.2016", bornplace: "* ", diedplace: "† ", livingplace: "", source: "pics/Jonas Boltersdorf.JPG" },
+
+        { key: 9022, n: "Amelie Meyer", s: "F", m: 8046, f:8045, birthday: "", diedplace: "† ", source: picWoman },
+        { key: 9023, n: "Lucas Meyer", s: "F", m: 8046, f:8045, birthday: "", diedplace: "† ", source: picWoman },
+
+        { key: 9024, n: "Leon Chrisant", s: "M", m: 8048, f:8050, source: picMan },
+        { key: 9025, n: "Jule Chrisant", s: "F", m: 8048, f:8050, source: picWoman },
+
+        { key: 9026, n: "Sven Scheffenborn", s: "M", m: 8057, f:8058, birthday: "10.02.1994", source: picMan },
+        { key: 9027, n: "Saskia Scheffenborn", s: "F", m: 8057, f:8058, birthday: "18.11.1995", source: picWoman },
+
+        { key: 9028, n: "Daniel Hemmerich", s: "M", m: 8059, f:8062, source: picMan },
+        { key: 9029, n: "Melissa Hemmerich", s: "F", m: 8059, f:8062, source: picWoman },
+        { key: 9030, n: "Nina Hemmerich", s: "F", m: 8059, f:8062, source: picWoman },
+
+        { key: 9031, n: "Daniela Zöller", s: "F", m: 8060, f:8063, source: picWoman },
+
+        { key: 9032, n: "Benjamin Linden", s: "M", m: 8064, f:8061, source: picMan },
+
+        { key: 9033, n: "Maroš Jacko", s: "M", m: 80343, f:80342, birthday: "07.04.2004", source: picMan },
+        { key: 9034, n: "Matej Jacko", s: "M", m: 80343, f:80342, birthday: "30.6.2009", source: picMan },
+        { key: 9035, n: "Milos Jacko", s: "M", m: 80343, f:80342, birthday: "11.9.2001", source: picMan },
+        { key: 9036, n: "Mišo Jacko", s: "M", m: 80343, f:80342, bornplace: "Poprad", birthday: "01.08.2015", source: picMan },
+
+        { key: 9037, n: "Leon Ryfisch", s: "M", m: 8065, f:8066, birthday: "28.12.2007", source: picMan },
+        { key: 9038, n: "Lara Ryfisch", s: "F", m: 8065, f:8066, birthday: "06.08.2011", source: picWoman },
+
+        { key: 9039, n: "René Mertens", s: "M", m: 808201, f:8082, birthday: "", source: picMan },
+        { key: 9040, n: "Jacqueline Mertens", s: "F", m: 808201, f:8082, birthday: "", source: picWoman },
+
+        { key: 9041, n: "Daniel Mertens", s: "M", m: 808301, f:8083, birthday: "", source: picMan },
+        { key: 9042, n: "Niklas Mertens", s: "M", m: 808301, f:8083, birthday: "", source: picMan },
+
+        { key: 9043, n: "André Mertens", s: "M", m: 808401, f:8084, ux: 904301, birthday: "", source: picMan },
+        { key: 904301, n: "Ilona ?", s: "F", birthday: "", source: picWoman },        
+        { key: 9044, n: "Jenny Mertens", s: "F", m: 808401, f:8084, birthday: "", source: picWoman },
+
+        { key: 9045, n: "Lukas ?", s: "M", m: 8085, f:808501, birthday: "", source: picMan },
+        { key: 9046, n: "Jana ?", s: "F", m: 8085, f:808501, birthday: "", source: picWoman },
+
+
+
+
+      ],
+        8001 /* focus on this person */);
+    }
+
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+
+
+    // create and initialize the Diagram.model given an array of node data representing people
+    // Erstellen und initialisieren Sie das Diagramm.modell mit einem Array von Knotendaten, die Personen darstellen
+    function setupDiagram(diagram, array, focusId) {
+      diagram.model =
+        go.GraphObject.make(go.GraphLinksModel,
+          { // declare support for link label nodes
+            linkLabelKeysProperty: "labelKeys",
+            // this property determines which template is used
+            nodeCategoryProperty: "s",
+            // if a node data object is copied, copy its data.a Array
+            copiesArrays: true,
+            // create all of the nodes for people
+            nodeDataArray: array
+          });
+      setupMarriages(diagram);
+      setupParents(diagram);
+
+      var node = diagram.findNodeForKey(focusId);
+      if (node !== null) {
+        diagram.select(node);
+        // remove any spouse for the person under focus:
+        // Entfernen Sie alle Ehepartner für die im Fokus stehende Person:
+        // node.linksConnected.each(function(l) {
+        //  if (!l.isLabeledLink) return;
+        //  l.opacity = 0;
+        //  var spouse = l.getOtherNode(node);
+        //  spouse.opacity = 0;
+        //  spouse.pickable = false;
+        // });
+      }
+    }
+
+    function findMarriage(diagram, a, b) {  // A and B are node keys
+      var nodeA = diagram.findNodeForKey(a);
+      var nodeB = diagram.findNodeForKey(b);
+      if (nodeA !== null && nodeB !== null) {
+        var it = nodeA.findLinksBetween(nodeB);  // in either direction
+        while (it.next()) {
+          var link = it.value;
+          // Link.data.category === "Marriage" means it's a marriage relationship
+          if (link.data !== null && link.data.category === "Marriage") return link;
+        }
+      }
+      return null;
+    }
+
+    // now process the node data to determine marriages
+    function setupMarriages(diagram) {
+      var model = diagram.model;
+      var nodeDataArray = model.nodeDataArray;
+      for (var i = 0; i < nodeDataArray.length; i++) {
+        var data = nodeDataArray[i];
+        var key = data.key;
+        var uxs = data.ux;
+        if (uxs !== undefined) {
+          if (typeof uxs === "number") uxs = [uxs];
+          for (var j = 0; j < uxs.length; j++) {
+            var wife = uxs[j];
+            if (key === wife) {
+              // or warn no reflexive marriages
+              continue;
+            }
+            var link = findMarriage(diagram, key, wife);
+            if (link === null) {
+              // add a label node for the marriage link
+              var mlab = { s: "LinkLabel" };
+              model.addNodeData(mlab);
+              // add the marriage link itself, also referring to the label node
+              var mdata = { from: key, to: wife, labelKeys: [mlab.key], category: "Marriage" };
+              model.addLinkData(mdata);
+            }
+          }
+        }
+        var virs = data.vir;
+        if (virs !== undefined) {
+          if (typeof virs === "number") virs = [virs];
+          for (var j = 0; j < virs.length; j++) {
+            var husband = virs[j];
+            if (key === husband) {
+              // or warn no reflexive marriages
+              continue;
+            }
+            var link = findMarriage(diagram, key, husband);
+            if (link === null) {
+              // add a label node for the marriage link
+              var mlab = { s: "LinkLabel" };
+              model.addNodeData(mlab);
+              // add the marriage link itself, also referring to the label node
+              var mdata = { from: key, to: husband, labelKeys: [mlab.key], category: "Marriage" };
+              model.addLinkData(mdata);
+            }
+          }
+        }
+      }
+    }
+
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+
+
+    // process parent-child relationships once all marriages are known
+    // Eltern-Kind-Beziehungen bearbeiten, wenn alle Ehen bekannt sind
+    function setupParents(diagram) {
+      var model = diagram.model;
+      var nodeDataArray = model.nodeDataArray;
+      for (var i = 0; i < nodeDataArray.length; i++) {
+        var data = nodeDataArray[i];
+        var key = data.key;
+        var mother = data.m;
+        var father = data.f;
+        if (mother !== undefined && father !== undefined) {
+          var link = findMarriage(diagram, mother, father);
+          if (link === null) {
+            // or warn no known mother or no known father or no known marriage between them
+            // oder keine bekannte Mutter oder keinen bekannten Vater oder keine bekannte Ehe zwischen ihnen warnen
+            if (window.console) window.console.log("unknown marriage: " + mother + " & " + father);
+            continue;
+          }
+          var mdata = link.data;
+          var mlabkey = mdata.labelKeys[0];
+          var cdata = { from: mlabkey, to: key };
+          myDiagram.model.addLinkData(cdata);
+        }
+      }
+    }
+
+
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+
+
+    // A custom layout that shows the two families related to a person's parents
+    function GenogramLayout() {
+      go.LayeredDigraphLayout.call(this);
+      this.initializeOption = go.LayeredDigraphLayout.InitDepthFirstIn;
+    //this.spouseSpacing = war 30 (horizontaler Abstand zwischen Ehepaaren)
+      this.spouseSpacing = 120;  // minimum space between spouses
+    }
+    go.Diagram.inherit(GenogramLayout, go.LayeredDigraphLayout);
+
+    GenogramLayout.prototype.makeNetwork = function(coll) {
+      // generate LayoutEdges for each parent-child Link
+      var net = this.createNetwork();
+      if (coll instanceof go.Diagram) {
+        this.add(net, coll.nodes, true);
+        this.add(net, coll.links, true);
+      } else if (coll instanceof go.Group) {
+        this.add(net, coll.memberParts, false);
+      } else if (coll.iterator) {
+        this.add(net, coll.iterator, false);
+      }
+      return net;
+    };
+
+    // internal method for creating LayeredDigraphNetwork where husband/wife pairs are represented
+    // by a single LayeredDigraphVertex corresponding to the label Node on the marriage Link
+    GenogramLayout.prototype.add = function(net, coll, nonmemberonly) {
+      var multiSpousePeople = new go.Set();
+      // consider all Nodes in the given collection
+      var it = coll.iterator;
+      while (it.next()) {
+        var node = it.value;
+        if (!(node instanceof go.Node)) continue;
+        if (!node.isLayoutPositioned || !node.isVisible()) continue;
+        if (nonmemberonly && node.containingGroup !== null) continue;
+        // if it's an unmarried Node, or if it's a Link Label Node, create a LayoutVertex for it
+        if (node.isLinkLabel) {
+          // get marriage Link
+          var link = node.labeledLink;
+          var spouseA = link.fromNode;
+          var spouseB = link.toNode;
+          // create vertex representing both husband and wife
+          var vertex = net.addNode(node);
+          // now define the vertex size to be big enough to hold both spouses
+          // Definieren Sie die Scheitelpunktgröße so, dass sie groß genug ist, um beide Ehepartner aufzunehmen
+          vertex.width = spouseA.actualBounds.width + this.spouseSpacing + spouseB.actualBounds.width;
+          vertex.height = Math.max(spouseA.actualBounds.height, spouseB.actualBounds.height);
+          vertex.focus = new go.Point(spouseA.actualBounds.width + this.spouseSpacing / 2, vertex.height / 2);
+        } else {
+          // don't add a vertex for any married person!
+          // instead, code above adds label node for marriage link
+          // assume a marriage Link has a label Node
+          var marriages = 0;
+          node.linksConnected.each(function(l) { if (l.isLabeledLink) marriages++; });
+          if (marriages === 0) {
+            var vertex = net.addNode(node);
+          } else if (marriages > 1) {
+            multiSpousePeople.add(node);
+          }
+        }
+      }
+      // now do all Links
+      it.reset();
+      while (it.next()) {
+        var link = it.value;
+        if (!(link instanceof go.Link)) continue;
+        if (!link.isLayoutPositioned || !link.isVisible()) continue;
+        if (nonmemberonly && link.containingGroup !== null) continue;
+        // if it's a parent-child link, add a LayoutEdge for it
+        // Wenn es sich um einen Eltern-Kind-Link handelt, fügen Sie einen LayoutEdge dafür hinzu
+        if (!link.isLabeledLink) {
+          var parent = net.findVertex(link.fromNode);  // should be a label node
+          var child = net.findVertex(link.toNode);
+          if (child !== null) {  // an unmarried child
+            net.linkVertexes(parent, child, link);
+          } else {  // a married child
+            link.toNode.linksConnected.each(function(l) {
+              if (!l.isLabeledLink) return;  // if it has no label node, it's a parent-child link
+              // found the Marriage Link, now get its label Node
+              var mlab = l.labelNodes.first();
+              // parent-child link should connect with the label node,
+              // so the LayoutEdge should connect with the LayoutVertex representing the label node
+              var mlabvert = net.findVertex(mlab);
+              if (mlabvert !== null) {
+                net.linkVertexes(parent, mlabvert, link);
+              }
+            });
+          }
+        }
+      }
+
+      while (multiSpousePeople.count > 0) {
+        // find all collections of people that are indirectly married to each other
+        var node = multiSpousePeople.first();
+        var cohort = new go.Set();
+        this.extendCohort(cohort, node);
+        // then encourage them all to be the same generation by connecting them all with a common vertex
+        var dummyvert = net.createVertex();
+        net.addVertex(dummyvert);
+        var marriages = new go.Set();
+        cohort.each(function(n) {
+          n.linksConnected.each(function(l) {
+            marriages.add(l);
+          })
+        });
+        marriages.each(function(link) {
+          // find the vertex for the marriage link (i.e. for the label node)
+          var mlab = link.labelNodes.first()
+          var v = net.findVertex(mlab);
+          if (v !== null) {
+            net.linkVertexes(dummyvert, v, null);
+          }
+        });
+        // done with these people, now see if there are any other multiple-married people
+        multiSpousePeople.removeAll(cohort);
+      }
+    };
+
+    // collect all of the people indirectly married with a person
+    GenogramLayout.prototype.extendCohort = function(coll, node) {
+      if (coll.has(node)) return;
+      coll.add(node);
+      var lay = this;
+      node.linksConnected.each(function(l) {
+        if (l.isLabeledLink) {  // if it's a marriage link, continue with both spouses
+          lay.extendCohort(coll, l.fromNode);
+          lay.extendCohort(coll, l.toNode);
+        }
+      });
+    };
+
+    GenogramLayout.prototype.assignLayers = function() {
+      go.LayeredDigraphLayout.prototype.assignLayers.call(this);
+      var horiz = this.direction == 0.0 || this.direction == 180.0;
+      // for every vertex, record the maximum vertex width or height for the vertex's layer
+      var maxsizes = [];
+      this.network.vertexes.each(function(v) {
+        var lay = v.layer;
+        var max = maxsizes[lay];
+        if (max === undefined) max = 0;
+        var sz = (horiz ? v.width : v.height);
+        if (sz > max) maxsizes[lay] = sz;
+      });
+      // now make sure every vertex has the maximum width or height according to which layer it is in,
+      // and aligned on the left (if horizontal) or the top (if vertical)
+      this.network.vertexes.each(function(v) {
+        var lay = v.layer;
+        var max = maxsizes[lay];
+        if (horiz) {
+          v.focus = new go.Point(0, v.height / 2);
+          v.width = max;
+        } else {
+          v.focus = new go.Point(v.width / 2, 0);
+          v.height = max;
+        }
+      });
+      // from now on, the LayeredDigraphLayout will think that the Node is bigger than it really is
+      // (other than the ones that are the widest or tallest in their respective layer).
+    };
+
+    GenogramLayout.prototype.commitNodes = function() {
+      go.LayeredDigraphLayout.prototype.commitNodes.call(this);
+      // position regular nodes
+      this.network.vertexes.each(function(v) {
+        if (v.node !== null && !v.node.isLinkLabel) {
+          v.node.position = new go.Point(v.x, v.y);
+        }
+      });
+      // position the spouses of each marriage vertex
+      var layout = this;
+      this.network.vertexes.each(function(v) {
+        if (v.node === null) return;
+        if (!v.node.isLinkLabel) return;
+        var labnode = v.node;
+        var lablink = labnode.labeledLink;
+        // In case the spouses are not actually moved, we need to have the marriage link
+        // position the label node, because LayoutVertex.commit() was called above on these vertexes.
+        // Alternatively we could override LayoutVetex.commit to be a no-op for label node vertexes.
+        lablink.invalidateRoute();
+        var spouseA = lablink.fromNode;
+        var spouseB = lablink.toNode;
+        // prefer fathers on the left, mothers on the right
+        if (spouseA.data.s === "F") {  // sex is female
+          var temp = spouseA;
+          spouseA = spouseB;
+          spouseB = temp;
+        }
+        // see if the parents are on the desired sides, to avoid a link crossing
+        // mal schauen ob sich die Eltern auf den gewünschten Seiten befinden, um eine Linkkreuzung zu vermeiden
+        var aParentsNode = layout.findParentsMarriageLabelNode(spouseA);
+        var bParentsNode = layout.findParentsMarriageLabelNode(spouseB);
+        if (aParentsNode !== null && bParentsNode !== null && aParentsNode.position.x > bParentsNode.position.x) {
+          // swap the spouses
+          // die Ehepartner tauschen
+          var temp = spouseA;
+          spouseA = spouseB;
+          spouseB = temp;
+        }
+        spouseA.position = new go.Point(v.x, v.y);
+        spouseB.position = new go.Point(v.x + spouseA.actualBounds.width + layout.spouseSpacing, v.y);
+        if (spouseA.opacity === 0) {
+          var pos = new go.Point(v.centerX - spouseA.actualBounds.width / 2, v.y);
+          spouseA.position = pos;
+          spouseB.position = pos;
+        } else if (spouseB.opacity === 0) {
+          var pos = new go.Point(v.centerX - spouseB.actualBounds.width / 2, v.y);
+          spouseA.position = pos;
+          spouseB.position = pos;
+        }
+      });
+      // position only-child nodes to be under the marriage label node
+      // Positionieren Sie nur-Kind-Knoten so, dass sie sich unter dem Heirats-Label-Knoten befinden
+      this.network.vertexes.each(function(v) {
+        if (v.node === null || v.node.linksConnected.count > 1) return;
+        var mnode = layout.findParentsMarriageLabelNode(v.node);
+        if (mnode !== null && mnode.linksConnected.count === 1) {  // if only one child
+          var mvert = layout.network.findVertex(mnode);
+          var newbnds = v.node.actualBounds.copy();
+          newbnds.x = mvert.centerX - v.node.actualBounds.width / 2;
+          // see if there's any empty space at the horizontal mid-point in that layer
+          // Sehen Sie nach, ob in der horizontalen Mitte dieser Ebene ein leerer Raum vorhanden ist
+          var overlaps = layout.diagram.findObjectsIn(newbnds, function(x) { return x.part; }, function(p) { return p !== v.node; }, true);
+          if (overlaps.count === 0) {
+            v.node.move(newbnds.position);
+          }
+        }
+      });
+    };
+
+    GenogramLayout.prototype.findParentsMarriageLabelNode = function(node) {
+      var it = node.findNodesInto();
+      while (it.next()) {
+        var n = it.value;
+        if (n.isLinkLabel) return n;
+      }
+      return null;
+    };
+    // end GenogramLayout class
+
+
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+//############################################################################################################################################################################
+
+
+  </script>
+
+</head>
+
+
+
+<body onload="init()">
+<div id="sample">
+
+ <div  id="myDiagramDiv" 
+ style="background-image:
+           linear-gradient(rgb(36, 22, 22), transparent),
+           linear-gradient(to top left, rgb(14, 22, 14), transparent),
+           linear-gradient(to top right, rgb(28, 28, 42), transparent) !important;
+           background-blend-mode: screen ;
+                                  
+         border: solid 1px black; 
+         width:98vw; 
+         height: 95vh;">
+
+  </div>
+ 
+</div>
+</body>
+</html>
