@@ -1,2 +1,5 @@
 # family_tree
-Family tree with GoJS
+
+Written with GoJS and html.
+
+I made it for practice.
